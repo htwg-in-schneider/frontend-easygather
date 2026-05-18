@@ -1,6 +1,8 @@
-# easygather
+# frontend-easygather
 
-This template should help get you started developing with Vue 3 in Vite.
+Frontend for EasyGather – Picknick- und Event-Bestellungen.
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-blue?style=for-the-badge)](https://htwg-in-schneider.github.io/frontend-easygather/)
 
 ## Recommended IDE Setup
 
@@ -52,3 +54,9 @@ Made static product page from mock work as a Vue project:
 - favicon goes to public folder
 - index.html: link favicon and Google Fonts
 - App.vue: Main content goes here. Logo link adapted.
+
+### Iteration 2: GitHub Page deployment
+
+- Added `.github/workflows/build-and-deploy.js.yml` to deploy as GitHub Page.
+- Tweaked `vite.config.js` to use correct base URL - otherwise the JS files won't be loaded when hosted as a GitHub page.
+- favicon in public folder (from Iteration 1).
