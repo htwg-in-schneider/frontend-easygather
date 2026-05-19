@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { fetchAllProducts } from '@/api/backend.js'
 import ProductCard from '@/components/ProductCard.vue'
 import Button from '@/components/Button.vue'
+import NavButton from '@/components/NavButton.vue'
 
 const products = ref([])
 const loading = ref(true)
@@ -41,6 +42,7 @@ function noop(event) {
         <p class="section-text">
           Picknickkörbe, Party & Event sowie Essen & Getränke – alles in einer Bestellung.
         </p>
+        <NavButton to="/product/create" variant="primary" class="shop-create-btn">Neues Produkt</NavButton>
       </div>
       <Button
         variant="secondary"

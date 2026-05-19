@@ -1,0 +1,159 @@
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import {
+  buildProductPayload,
+  deleteProduct,
+  fetchCategories,
+  fetchCategoryTranslations,
+  fetchRawProductById,
+  updateProduct,
+} from '@/api/backend.js'
+import { resolveProductImage } from '@/productImages.js'
+import Button from '@/components/Button.vue'
+import NavButton from '@/components/NavButton.vue'
+
+const route = useRoute()
+const router = useRouter()
+
+const form = ref({
+  id: null,
+  title: '',
+  price: 0,
+  imageUrl: '',
+  description: '',
+  categoryId: '',
+})
+const categories = ref([])
+const translations = ref({})
+const loading = ref(true)
+
+const previewImage = computed(() => {
+  const { imageUrl, imageAlt } = resolveProductImage({
+    title: form.value.title,
+    category: categories.value.find((c) => c.id === form.value.categoryId),
+  })
+  if (form.value.imageUrl) {
+    return { imageUrl: form.value.imageUrl, imageAlt: form.value.title || 'Produktbild' }
+  }
+  return { imageUrl, imageAlt }
+})
+
+onMounted(async () => {
+  await Promise.all([loadCategories(), loadTranslations(), loadProduct()])
+  loading.value = false
+})
+
+async function loadCategories() {
+  try {
+    categories.value = await fetchCategories()
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+  }
+}
+
+async function loadTranslations() {
+  try {
+    translations.value = await fetchCategoryTranslations()
+  } catch (error) {
+    console.error('Error fetching translations:', error)
+  }
+}
+
+async function loadProduct() {
+  try {
+    const data = await fetchRawProductById(route.params.id)
+    form.value = {
+      id: data.id,
+      title: data.title ?? '',
+      price: data.price ?? 0,
+      imageUrl: data.imageUrl ?? '',
+      description: data.description ?? '',
+      categoryId: data.category?.id ?? '',
+    }
+  } catch (error) {
+    console.error('Fehler beim Laden des Produkts:', error)
+    alert('Produkt konnte nicht geladen werden.')
+    router.push('/shop')
+  }
+}
+
+function categoryLabel(category) {
+  return translations.value[category.shopCategory] || category.title
+}
+
+async function submitUpdate() {
+  if (!form.value.categoryId) {
+    alert('Bitte eine Kategorie wählen.')
+    return
+  }
+  try {
+    await updateProduct(form.value.id, buildProductPayload(form.value))
+    alert('Produkt erfolgreich aktualisiert!')
+    router.push('/shop')
+  } catch (error) {
+    console.error('Fehler beim Aktualisieren des Produkts:', error)
+    alert('Produkt konnte nicht aktualisiert werden.')
+  }
+}
+
+async function submitDelete() {
+  if (!confirm('Möchten Sie dieses Produkt wirklich löschen?')) return
+  try {
+    await deleteProduct(form.value.id)
+    alert('Produkt erfolgreich gelöscht!')
+    router.push('/shop')
+  } catch (error) {
+    console.error('Fehler beim Löschen des Produkts:', error)
+    alert('Produkt konnte nicht gelöscht werden.')
+  }
+}
+</script>
+
+<template>
+  <section class="product-form-page">
+    <p v-if="loading" class="section-text">Produkt wird geladen …</p>
+    <template v-else>
+      <h2>Produkt bearbeiten</h2>
+      <div class="product-form-preview">
+        <img :src="previewImage.imageUrl" :alt="previewImage.imageAlt" />
+      </div>
+      <form class="product-form" @submit.prevent="submitUpdate">
+        <div class="product-form-field">
+          <label for="productId">Produkt-ID</label>
+          <input id="productId" :value="form.id" type="text" readonly />
+        </div>
+        <div class="product-form-field">
+          <label for="productName">Name</label>
+          <input id="productName" v-model="form.title" type="text" required />
+        </div>
+        <div class="product-form-field">
+          <label for="productCategory">Kategorie</label>
+          <select id="productCategory" v-model="form.categoryId" required>
+            <option disabled value="">Bitte wählen</option>
+            <option v-for="category in categories" :key="category.id" :value="category.id">
+              {{ categoryLabel(category) }}
+            </option>
+          </select>
+        </div>
+        <div class="product-form-field">
+          <label for="productPrice">Preis</label>
+          <input id="productPrice" v-model.number="form.price" type="number" min="0" step="0.01" required />
+        </div>
+        <div class="product-form-field">
+          <label for="productImageUrl">Bild-URL</label>
+          <input id="productImageUrl" v-model="form.imageUrl" type="text" />
+        </div>
+        <div class="product-form-field">
+          <label for="productDescription">Beschreibung</label>
+          <textarea id="productDescription" v-model="form.description" rows="4" />
+        </div>
+        <div class="product-form-actions">
+          <NavButton to="/shop" variant="secondary">Abbrechen</NavButton>
+          <Button type="submit" variant="primary">Aktualisieren</Button>
+          <Button type="button" variant="danger" @click="submitDelete">Löschen</Button>
+        </div>
+      </form>
+    </template>
+  </section>
+</template>

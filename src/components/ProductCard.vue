@@ -37,7 +37,16 @@ function formatPrice(product) {
     <h3>{{ product.title }}</h3>
     <p>{{ product.description }}</p>
     <span class="meta">{{ formatPrice(product) }}</span>
-    <NavButton :to="productLink" class="basket-btn">Auswählen</NavButton>
+    <div class="basket-card-actions">
+      <NavButton :to="productLink" class="basket-btn">Auswählen</NavButton>
+      <NavButton
+        :to="{ name: 'product-edit', params: { id: String(product.id) } }"
+        variant="secondary"
+        class="basket-btn-edit"
+      >
+        Bearbeiten
+      </NavButton>
+    </div>
   </article>
 </template>
 
@@ -75,7 +84,14 @@ function formatPrice(product) {
   font-size: 0.9rem;
 }
 
-.basket-btn {
-  margin-left: 0.85rem;
+.basket-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-inline: 0.85rem;
+}
+
+.basket-btn-edit {
+  font-size: 0.88rem;
 }
 </style>

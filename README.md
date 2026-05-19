@@ -120,3 +120,12 @@ Made static product page from mock work as a Vue project:
 - Backend must be running (`.\mvnw.cmd spring-boot:run` in `easygather-backend`).
 - Optional: `VITE_API_BASE_URL` in `.env` for another API host (default: `http://localhost:8081`).
 - Filter UI in the shop follows in a later iteration; backend supports `shopCategory` and `maxPrice` already.
+
+### Iteration 9: Complete CRUD of products via REST
+
+- New views `CreateProduct.vue` and `EditProduct.vue` with forms for create, update, and delete.
+- Categories and translations loaded from `GET /api/category` and `GET /api/category/translation`.
+- API calls via `src/api/backend.js`: `POST /api/product`, `PUT /api/product/:id`, `DELETE /api/product/:id` (category sent as `{ id }` for the EasyGather backend).
+- `ProductCatalog`: button **Neues Produkt** → `/product/create`.
+- `ProductCard`: **Bearbeiten** → `/product/edit/:id`; **Auswählen** → `/product/view/:id`.
+- Success and error feedback with simple `alert()` dialogs.
