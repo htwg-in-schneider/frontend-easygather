@@ -2,6 +2,9 @@
 import { ref, computed } from 'vue'
 import { categories, products } from './data.js'
 import freundePicknickImg from './assets/FreundePicknick.jpg'
+import Navbar from '@/components/Navbar.vue'
+import Footer from '@/components/Footer.vue'
+import ProductCard from '@/components/ProductCard.vue'
 
 const currentPage = ref('home')
 const searchQuery = ref('')
@@ -22,12 +25,6 @@ function goShop(event, category = 'alle') {
   event?.preventDefault()
   currentPage.value = 'shop'
   filterCategory.value = category
-}
-
-function runSearch() {
-  if (searchQuery.value.trim()) {
-    currentPage.value = 'search'
-  }
 }
 
 function resetFilters() {
@@ -54,42 +51,18 @@ const displayedProducts = computed(() => {
   return list
 })
 
-function formatPrice(product) {
-  const amount = `${product.price.toFixed(2).replace('.', ',')} EUR`
-  return product.priceFrom ? `ab ${amount}` : amount
-}
-
-function showProductAlert(product) {
-  const items = product.includedItems?.length
-    ? '\n\nEnthaltene Artikel:\n• ' + product.includedItems.join('\n• ')
-    : ''
-  alert(product.description + items)
-}
-
 function noop(event) {
   event?.preventDefault()
 }
 </script>
 
 <template>
-  <header class="site-header">
-    <div class="header-inner">
-      <a href="#" class="logo" @click="goHome">EasyGather</a>
-      <nav class="nav-main">
-        <a href="#" @click="noop">Liefergebiet</a>
-        <a
-          href="#"
-          :class="{ 'nav-active': currentPage === 'shop' || currentPage === 'search' }"
-          @click="goShop"
-        >
-          Shop
-        </a>
-        <a href="#" @click="noop">Warenkorb</a>
-        <a href="#" @click="noop">Anmelden</a>
-        <a href="#" class="nav-register" @click="noop">Registrieren</a>
-      </nav>
-    </div>
-  </header>
+  <Navbar
+    :shop-active="currentPage === 'shop' || currentPage === 'search'"
+    @home="goHome"
+    @shop="goShop"
+    @noop="noop"
+  />
 
   <main>
     <template v-if="currentPage === 'home'">
@@ -166,52 +139,13 @@ function noop(event) {
         </p>
 
         <div v-if="displayedProducts.length" class="basket-grid">
-          <article v-for="product in displayedProducts" :key="product.id" class="card basket-card">
-            <img :src="product.imageUrl" :alt="product.imageAlt" />
-            <h3>{{ product.title }}</h3>
-            <p>{{ product.description }}</p>
-            <span class="meta">{{ formatPrice(product) }}</span>
-            <a href="#" class="btn btn-secondary basket-btn" @click.prevent="showProductAlert(product)">
-              Auswählen
-            </a>
-          </article>
+          <ProductCard v-for="product in displayedProducts" :key="product.id" :product="product" />
         </div>
       </section>
     </template>
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div>
-        <h4>Informationen</h4>
-        <ul>
-          <li><a href="#" @click="noop">AGB</a></li>
-          <li><a href="#" @click="noop">Datenschutz</a></li>
-          <li><a href="#" @click="noop">Widerrufsrecht</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>EasyGather</h4>
-        <ul>
-          <li><a href="#" @click="noop">Über uns</a></li>
-          <li><a href="#" @click="noop">Kontakt</a></li>
-          <li><a href="#" @click="noop">Hilfe</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Service</h4>
-        <ul>
-          <li><a href="#" @click="noop">Liefergebiet</a></li>
-          <li><a href="#" @click="noop">Bestellstatus</a></li>
-          <li><a href="#" @click="noop">Newsletter</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Folge uns</h4>
-        <p>Instagram<br />Facebook<br />TikTok</p>
-      </div>
-    </div>
-  </footer>
+  <Footer @noop="noop" />
 </template>
 
 <style scoped></style>

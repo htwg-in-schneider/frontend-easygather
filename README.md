@@ -66,3 +66,10 @@ Made static product page from mock work as a Vue project:
 - Products are displayed in a grid.
 - "Details" button shows product description in an alert.
 - Product images, titles, and prices are now populated from array data.
+
+### Iteration 4: High-Level components
+
+- Vue components in `src/components`: `Navbar.vue`, `Footer.vue`, `ProductCard.vue`.
+- `App.vue` uses these components for header, footer, and product cards in the shop.
+- Component-specific styles moved from `style.css` into `<style scoped>` sections.
+- Product card logic (price formatting, alert on „Auswählen“) lives in `ProductCard.vue`.
