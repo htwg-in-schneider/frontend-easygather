@@ -1,4 +1,6 @@
 <script setup>
+import Button from '@/components/Button.vue'
+
 defineProps({
   shopActive: {
     type: Boolean,
@@ -30,7 +32,7 @@ function onNoop(event) {
         <a href="#" :class="{ 'nav-active': shopActive }" @click="onShop">Shop</a>
         <a href="#" @click="onNoop">Warenkorb</a>
         <a href="#" @click="onNoop">Anmelden</a>
-        <a href="#" class="nav-register" @click="onNoop">Registrieren</a>
+        <Button variant="register" href="#" @click="onNoop">Registrieren</Button>
       </nav>
     </div>
   </header>
@@ -75,19 +77,6 @@ function onNoop(event) {
   font-size: 0.88rem;
   font-weight: 500;
   text-decoration: none;
-}
-
-.nav-register {
-  background: var(--moss);
-  color: #fff;
-  border-radius: 999px;
-  padding: 0.35rem 0.8rem;
-  font-weight: 600;
-}
-
-.nav-register:hover {
-  background: var(--moss-dark);
-  color: #fff;
 }
 
 .nav-active {

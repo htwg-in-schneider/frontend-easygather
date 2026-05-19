@@ -73,3 +73,10 @@ Made static product page from mock work as a Vue project:
 - `App.vue` uses these components for header, footer, and product cards in the shop.
 - Component-specific styles moved from `style.css` into `<style scoped>` sections.
 - Product card logic (price formatting, alert on „Auswählen“) lives in `ProductCard.vue`.
+
+### Iteration 5: Low-Level components
+
+- `Button.vue`: reusable button with variants `primary` and `secondary` (plus `register` for the nav).
+- `FooterLink.vue`: styled footer links used in `Footer.vue`.
+- `ProductCard.vue` and `App.vue` use `Button` instead of raw `<button>` / `.btn` classes.
+- Button styles removed from global `style.css` and moved into `Button.vue` (`<style scoped>`).

@@ -1,4 +1,6 @@
 <script setup>
+import Button from '@/components/Button.vue'
+
 const props = defineProps({
   product: {
     type: Object,
@@ -26,7 +28,7 @@ function showProductAlert() {
     <h3>{{ product.title }}</h3>
     <p>{{ product.description }}</p>
     <span class="meta">{{ formatPrice(product) }}</span>
-    <a href="#" class="btn btn-secondary basket-btn" @click.prevent="showProductAlert">Auswählen</a>
+    <Button variant="secondary" class="basket-btn" @click="showProductAlert">Auswählen</Button>
   </article>
 </template>
 

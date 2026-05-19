@@ -73,29 +73,6 @@ h1 {
   flex-wrap: wrap;
 }
 
-.btn {
-  display: inline-block;
-  text-decoration: none;
-  border-radius: 999px;
-  padding: 0.62rem 1.15rem;
-  font-weight: 700;
-  font-size: 0.94rem;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.btn-primary {
-  background: var(--moss);
-  color: #fff;
-}
-
-.btn-secondary {
-  border: 2px solid var(--moss);
-  color: var(--moss);
-  background: transparent;
-}
-
 .hero-visual {
   border-radius: 1rem;
   border: 1px solid rgba(61, 107, 79, 0.17);

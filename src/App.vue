@@ -5,6 +5,7 @@ import freundePicknickImg from './assets/FreundePicknick.jpg'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import ProductCard from '@/components/ProductCard.vue'
+import Button from '@/components/Button.vue'
 
 const currentPage = ref('home')
 const searchQuery = ref('')
@@ -76,8 +77,8 @@ function noop(event) {
             und stressfrei auf die Beine zu stellen.
           </p>
           <div class="cta-row">
-            <a href="#" class="btn btn-primary" @click="goShop">Shop durchsuchen</a>
-            <a href="#" class="btn btn-secondary" @click="noop">Liefergebiet auswählen</a>
+            <Button variant="primary" href="#" @click="goShop">Shop durchsuchen</Button>
+            <Button variant="secondary" href="#" @click="noop">Liefergebiet auswählen</Button>
           </div>
         </div>
 
@@ -125,14 +126,14 @@ function noop(event) {
               Picknickkörbe, Party & Event sowie Essen & Getränke – alles in einer Bestellung.
             </p>
           </div>
-          <button
-            type="button"
-            class="btn btn-secondary basket-filter-toggle"
+          <Button
+            variant="secondary"
+            class="basket-filter-toggle"
             title="Filter folgt in einer späteren Iteration"
-            @click.prevent="noop"
+            @click="noop"
           >
             Filter
-          </button>
+          </Button>
         </div>
         <p v-if="displayedProducts.length === 0" class="section-text">
           Keine Produkte gefunden.

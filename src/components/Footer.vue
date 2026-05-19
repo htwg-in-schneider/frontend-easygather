@@ -1,4 +1,6 @@
 <script setup>
+import FooterLink from '@/components/FooterLink.vue'
+
 const emit = defineEmits(['noop'])
 
 function onNoop(event) {
@@ -12,25 +14,25 @@ function onNoop(event) {
       <div>
         <h4>Informationen</h4>
         <ul>
-          <li><a href="#" @click="onNoop">AGB</a></li>
-          <li><a href="#" @click="onNoop">Datenschutz</a></li>
-          <li><a href="#" @click="onNoop">Widerrufsrecht</a></li>
+          <li><FooterLink text="AGB" @click="onNoop" /></li>
+          <li><FooterLink text="Datenschutz" @click="onNoop" /></li>
+          <li><FooterLink text="Widerrufsrecht" @click="onNoop" /></li>
         </ul>
       </div>
       <div>
         <h4>EasyGather</h4>
         <ul>
-          <li><a href="#" @click="onNoop">Über uns</a></li>
-          <li><a href="#" @click="onNoop">Kontakt</a></li>
-          <li><a href="#" @click="onNoop">Hilfe</a></li>
+          <li><FooterLink text="Über uns" @click="onNoop" /></li>
+          <li><FooterLink text="Kontakt" @click="onNoop" /></li>
+          <li><FooterLink text="Hilfe" @click="onNoop" /></li>
         </ul>
       </div>
       <div>
         <h4>Service</h4>
         <ul>
-          <li><a href="#" @click="onNoop">Liefergebiet</a></li>
-          <li><a href="#" @click="onNoop">Bestellstatus</a></li>
-          <li><a href="#" @click="onNoop">Newsletter</a></li>
+          <li><FooterLink text="Liefergebiet" @click="onNoop" /></li>
+          <li><FooterLink text="Bestellstatus" @click="onNoop" /></li>
+          <li><FooterLink text="Newsletter" @click="onNoop" /></li>
         </ul>
       </div>
       <div>
@@ -77,15 +79,6 @@ function onNoop(event) {
   padding: 0;
   display: grid;
   gap: 0.3rem;
-}
-
-.footer-inner a {
-  color: var(--muted);
-  text-decoration: none;
-}
-
-.footer-inner a:hover {
-  color: var(--terracotta);
 }
 
 .footer-inner p {
