@@ -1,19 +1,32 @@
 <script setup>
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { products } from '@/data.js'
+import { ref, computed, onMounted } from 'vue'
+import { fetchAllProducts } from '@/api/dummyjson.js'
 import ProductCard from '@/components/ProductCard.vue'
 import Button from '@/components/Button.vue'
 
-const route = useRoute()
+const products = ref([])
+const loading = ref(true)
+const error = ref(null)
 
-const displayedProducts = computed(() => {
-  const category = route.query.category
-  if (category && typeof category === 'string') {
-    return products.filter((product) => product.category === category)
-  }
-  return products
+const displayedProducts = computed(() => products.value)
+
+onMounted(async () => {
+  await loadProducts()
 })
+
+async function loadProducts() {
+  loading.value = true
+  error.value = null
+  try {
+    products.value = await fetchAllProducts()
+  } catch (err) {
+    console.error('Error fetching products:', err)
+    error.value = 'Produkte konnten nicht geladen werden.'
+    products.value = []
+  } finally {
+    loading.value = false
+  }
+}
 
 function noop(event) {
   event?.preventDefault()
@@ -38,7 +51,10 @@ function noop(event) {
         Filter
       </Button>
     </div>
-    <p v-if="displayedProducts.length === 0" class="section-text">Keine Produkte gefunden.</p>
+
+    <p v-if="loading" class="section-text">Produkte werden geladen …</p>
+    <p v-else-if="error" class="section-text">{{ error }}</p>
+    <p v-else-if="displayedProducts.length === 0" class="section-text">Keine Produkte gefunden.</p>
 
     <div v-if="displayedProducts.length" class="basket-grid">
       <ProductCard v-for="product in displayedProducts" :key="product.id" :product="product" />

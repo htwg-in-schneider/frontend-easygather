@@ -1,15 +1,15 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { products } from '@/data.js'
+import { fetchProductById } from '@/api/dummyjson.js'
 import NavButton from '@/components/NavButton.vue'
 import Button from '@/components/Button.vue'
 
 const route = useRoute()
 
-const product = computed(() =>
-  products.find((item) => String(item.id) === route.params.id),
-)
+const product = ref(null)
+const loading = ref(true)
+const error = ref(null)
 
 const shopBackLink = computed(() => {
   const returnCategory = route.query.returnCategory
@@ -18,6 +18,31 @@ const shopBackLink = computed(() => {
   }
   return { path: '/shop' }
 })
+
+onMounted(() => {
+  loadProduct()
+})
+
+watch(
+  () => route.params.id,
+  () => {
+    loadProduct()
+  },
+)
+
+async function loadProduct() {
+  loading.value = true
+  error.value = null
+  product.value = null
+  try {
+    product.value = await fetchProductById(route.params.id)
+  } catch (err) {
+    console.error('Error fetching product:', err)
+    error.value = 'Produkt konnte nicht geladen werden.'
+  } finally {
+    loading.value = false
+  }
+}
 
 function formatPrice(item) {
   const amount = `${item.price.toFixed(2).replace('.', ',')} EUR`
@@ -31,7 +56,10 @@ function noop(event) {
 
 <template>
   <section class="product-detail">
-    <div v-if="product" class="product-detail-grid">
+    <p v-if="loading" class="section-text">Produkt wird geladen …</p>
+    <p v-else-if="error" class="section-text">{{ error }}</p>
+
+    <div v-else-if="product" class="product-detail-grid">
       <img :src="product.imageUrl" :alt="product.imageAlt" class="product-detail-image" />
       <div>
         <h2>{{ product.title }}</h2>

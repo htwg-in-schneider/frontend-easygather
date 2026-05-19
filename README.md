@@ -102,3 +102,11 @@ Made static product page from mock work as a Vue project:
 - Banner placed in `App.vue` (visible on all pages until dismissed).
 
 **Hinweis:** Für EasyGather wäre ein globaler **Warenkorb-Store** (Artikelanzahl in der Navbar, „In den Warenkorb“ auf der Detailseite) inhaltlich die passendere bzw. eigenständigere Pinia-Nutzung. Wir orientieren uns in Iteration 7 am Beispielprojekt *saitenweise-frontend* (Banner-Sichtbarkeit). Ein echter Warenkorb mit Pinia ist für eine spätere Iteration vorgesehen und gehört bewusst **nicht** zum Umfang dieser Abgabe.
+
+### Iteration 8a: Dynamic product loading via REST (dummy data)
+
+- Replaced static product list with data from [dummyjson.com/products](https://dummyjson.com/products).
+- New helper `src/api/dummyjson.js` maps API fields (`thumbnail` → `imageUrl`, etc.).
+- `ProductCatalog.vue` and `ProductDetail.vue` fetch products on mount (`fetch`, basic error handling).
+- `data.js` keeps only **categories** for the home page; product array removed.
+- Category filter in the shop applies again from iteration 8b (own backend); in 8a the shop shows all API products.
