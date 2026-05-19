@@ -110,3 +110,13 @@ Made static product page from mock work as a Vue project:
 - `ProductCatalog.vue` and `ProductDetail.vue` fetch products on mount (`fetch`, basic error handling).
 - `data.js` keeps only **categories** for the home page; product array removed.
 - Category filter in the shop applies again from iteration 8b (own backend); in 8a the shop shows all API products.
+
+### Iteration 8b: Dynamic product loading via REST backend (real data)
+
+- Replaced dummyjson with data from our REST backend (`http://localhost:8081/api/product`).
+- New helper `src/api/backend.js` – loads title, price, description, category from the API.
+- Product images use local files from `src/assets` via `src/productImages.js` (backend `imageUrl` are placeholders only).
+- `ProductCatalog.vue` and `ProductDetail.vue` use `fetchAllProducts` / `fetchProductById` from the backend API.
+- Backend must be running (`.\mvnw.cmd spring-boot:run` in `easygather-backend`).
+- Optional: `VITE_API_BASE_URL` in `.env` for another API host (default: `http://localhost:8081`).
+- Filter UI in the shop follows in a later iteration; backend supports `shopCategory` and `maxPrice` already.

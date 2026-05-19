@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { fetchAllProducts } from '@/api/dummyjson.js'
+import { fetchAllProducts } from '@/api/backend.js'
 import ProductCard from '@/components/ProductCard.vue'
 import Button from '@/components/Button.vue'
 

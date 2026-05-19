@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { fetchProductById } from '@/api/dummyjson.js'
+import { fetchProductById } from '@/api/backend.js'
 import NavButton from '@/components/NavButton.vue'
 import Button from '@/components/Button.vue'
 
