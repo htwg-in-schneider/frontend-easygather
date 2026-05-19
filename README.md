@@ -119,7 +119,15 @@ Made static product page from mock work as a Vue project:
 - `ProductCatalog.vue` and `ProductDetail.vue` use `fetchAllProducts` / `fetchProductById` from the backend API.
 - Backend must be running (`.\mvnw.cmd spring-boot:run` in `easygather-backend`).
 - Optional: `VITE_API_BASE_URL` in `.env` for another API host (default: `http://localhost:8081`).
-- Filter UI in the shop follows in a later iteration; backend supports `shopCategory` and `maxPrice` already.
+- Filter UI in the shop was added in iteration 10a; backend also supports `maxPrice` for later use.
+
+### Iteration 10a: Product Search and Filter
+
+- **Search:** search field in the **navbar** next to the logo (`Enter` → `/shop?name=...`, then `GET /api/product?name=...`).
+- **Filter:** **Filter** button opens a panel (`ProductFilterPanel.vue`): category dropdown, free **max price** input, **Filter anwenden** / **Zurücksetzen**.
+- **Homepage:** category cards link to `/shop?category=...`; the shop applies that category filter automatically.
+- Categories and translations from `GET /api/category` and `GET /api/category/translation`.
+- `fetchProducts()` in `backend.js` builds the query (`name`, `shopCategory`).
 
 ### Iteration 9: Complete CRUD of products via REST
 

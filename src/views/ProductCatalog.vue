@@ -1,25 +1,90 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { fetchAllProducts } from '@/api/backend.js'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { fetchProducts, fetchCategoryTranslations } from '@/api/backend.js'
 import ProductCard from '@/components/ProductCard.vue'
+import ProductFilterPanel from '@/components/ProductFilterPanel.vue'
 import Button from '@/components/Button.vue'
 import NavButton from '@/components/NavButton.vue'
+
+const route = useRoute()
+const router = useRouter()
 
 const products = ref([])
 const loading = ref(true)
 const error = ref(null)
+const searchName = ref('')
+const selectedCategory = ref('')
+const selectedMaxPrice = ref('')
+const filterOpen = ref(false)
+const translations = ref({})
 
 const displayedProducts = computed(() => products.value)
 
-onMounted(async () => {
-  await loadProducts()
+const activeCategoryLabel = computed(() => {
+  if (!selectedCategory.value) return ''
+  return translations.value[selectedCategory.value] || selectedCategory.value
 })
 
-async function loadProducts() {
+const activePriceLabel = computed(() => {
+  if (!selectedMaxPrice.value) return ''
+  return `bis ${selectedMaxPrice.value} EUR`
+})
+
+onMounted(async () => {
+  await loadTranslations()
+  syncCategoryFromRoute()
+  syncSearchFromRoute()
+  syncMaxPriceFromRoute()
+  await loadProducts(currentFilters())
+})
+
+watch(
+  () => [route.query.category, route.query.name, route.query.maxPrice],
+  () => {
+    syncCategoryFromRoute()
+    syncSearchFromRoute()
+    syncMaxPriceFromRoute()
+    loadProducts(currentFilters())
+  },
+)
+
+async function loadTranslations() {
+  try {
+    translations.value = await fetchCategoryTranslations()
+  } catch (err) {
+    console.error('Error fetching translations:', err)
+  }
+}
+
+function syncCategoryFromRoute() {
+  const category = route.query.category
+  selectedCategory.value = typeof category === 'string' ? category : ''
+}
+
+function syncSearchFromRoute() {
+  const name = route.query.name
+  searchName.value = typeof name === 'string' ? name : ''
+}
+
+function syncMaxPriceFromRoute() {
+  const maxPrice = route.query.maxPrice
+  selectedMaxPrice.value = typeof maxPrice === 'string' ? maxPrice : ''
+}
+
+function currentFilters() {
+  return {
+    name: searchName.value,
+    shopCategory: selectedCategory.value,
+    maxPrice: selectedMaxPrice.value || null,
+  }
+}
+
+async function loadProducts(filters = {}) {
   loading.value = true
   error.value = null
   try {
-    products.value = await fetchAllProducts()
+    products.value = await fetchProducts(filters)
   } catch (err) {
     console.error('Error fetching products:', err)
     error.value = 'Produkte konnten nicht geladen werden.'
@@ -29,8 +94,36 @@ async function loadProducts() {
   }
 }
 
-function noop(event) {
-  event?.preventDefault()
+function toggleFilter() {
+  filterOpen.value = !filterOpen.value
+}
+
+function applyFilters() {
+  filterOpen.value = false
+  updateFiltersInUrl()
+  loadProducts(currentFilters())
+}
+
+function resetFilters() {
+  filterOpen.value = false
+  selectedCategory.value = ''
+  selectedMaxPrice.value = ''
+  updateFiltersInUrl()
+  loadProducts(currentFilters())
+}
+
+function updateFiltersInUrl() {
+  const query = {}
+  if (selectedCategory.value) {
+    query.category = selectedCategory.value
+  }
+  if (searchName.value.trim()) {
+    query.name = searchName.value.trim()
+  }
+  if (selectedMaxPrice.value) {
+    query.maxPrice = selectedMaxPrice.value
+  }
+  router.replace({ path: '/shop', query })
 }
 </script>
 
@@ -42,17 +135,33 @@ function noop(event) {
         <p class="section-text">
           Picknickkörbe, Party & Event sowie Essen & Getränke – alles in einer Bestellung.
         </p>
+        <p v-if="activeCategoryLabel || activePriceLabel || searchName" class="shop-active-filter">
+          <span v-if="activeCategoryLabel">Kategorie: <strong>{{ activeCategoryLabel }}</strong></span>
+          <span v-if="activeCategoryLabel && (activePriceLabel || searchName)"> · </span>
+          <span v-if="activePriceLabel">Preis: <strong>{{ activePriceLabel }}</strong></span>
+          <span v-if="activePriceLabel && searchName"> · </span>
+          <span v-if="searchName">Suche: <strong>{{ searchName }}</strong></span>
+        </p>
         <NavButton to="/product/create" variant="primary" class="shop-create-btn">Neues Produkt</NavButton>
       </div>
       <Button
+        type="button"
         variant="secondary"
         class="basket-filter-toggle"
-        title="Filter folgt in einer späteren Iteration"
-        @click="noop"
+        :aria-expanded="filterOpen"
+        @click="toggleFilter"
       >
         Filter
       </Button>
     </div>
+
+    <ProductFilterPanel
+      v-model:shop-category="selectedCategory"
+      v-model:max-price="selectedMaxPrice"
+      :open="filterOpen"
+      @apply="applyFilters"
+      @reset="resetFilters"
+    />
 
     <p v-if="loading" class="section-text">Produkte werden geladen …</p>
     <p v-else-if="error" class="section-text">{{ error }}</p>

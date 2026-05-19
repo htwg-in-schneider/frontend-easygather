@@ -17,13 +17,30 @@ export function mapBackendProduct(item) {
   }
 }
 
-export async function fetchAllProducts() {
-  const response = await fetch(`${API_BASE_URL}/api/product`)
+export async function fetchProducts(filters = {}) {
+  const params = new URLSearchParams()
+  if (filters.name?.trim()) {
+    params.append('name', filters.name.trim())
+  }
+  if (filters.shopCategory) {
+    params.append('shopCategory', filters.shopCategory)
+  }
+  if (filters.maxPrice != null && filters.maxPrice !== '') {
+    params.append('maxPrice', String(filters.maxPrice))
+  }
+
+  const query = params.toString()
+  const url = query ? `${API_BASE_URL}/api/product?${query}` : `${API_BASE_URL}/api/product`
+  const response = await fetch(url)
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`)
   }
   const data = await response.json()
   return data.map(mapBackendProduct)
+}
+
+export async function fetchAllProducts() {
+  return fetchProducts()
 }
 
 export async function fetchProductById(id) {

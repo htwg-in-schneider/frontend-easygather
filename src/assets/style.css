@@ -236,9 +236,69 @@ section h2 {
 
 .basket-filter-toggle {
   flex-shrink: 0;
-  cursor: default;
-  background: transparent;
   margin-top: 0.15rem;
+}
+
+.shop-active-filter {
+  margin: 0.35rem 0 0;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.shop-active-filter strong {
+  color: var(--moss);
+}
+
+.shop-filter-panel {
+  margin-bottom: 1.25rem;
+  padding: 1.25rem 1rem 1rem;
+  border-top: 1px solid rgba(61, 107, 79, 0.15);
+  background: #fff;
+}
+
+.shop-filter-heading {
+  margin: 0 0 1rem;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.shop-filter-field {
+  margin-bottom: 1rem;
+}
+
+.shop-filter-field label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.shop-filter-select,
+.shop-filter-input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid rgba(31, 45, 36, 0.2);
+  border-radius: 0.5rem;
+  font: inherit;
+  color: var(--ink);
+  background: #fff;
+}
+
+.shop-filter-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.shop-filter-apply {
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.shop-filter-reset {
+  width: 100%;
+  margin-top: 0.5rem;
 }
 
 .basket-grid {
