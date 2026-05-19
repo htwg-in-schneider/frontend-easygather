@@ -80,3 +80,14 @@ Made static product page from mock work as a Vue project:
 - `FooterLink.vue`: styled footer links used in `Footer.vue`.
 - `ProductCard.vue` and `App.vue` use `Button` instead of raw `<button>` / `.btn` classes.
 - Button styles removed from global `style.css` and moved into `Button.vue` (`<style scoped>`).
+
+### Iteration 6: Added Vue-Router and product detail view
+
+- Integrated **Vue Router** (`src/router/index.js`) with `createWebHistory(import.meta.env.BASE_URL)` for GitHub Pages.
+- `App.vue` uses `<router-view>`; page content moved to views.
+- Routes: `/` (home), `/shop` (product catalog), `/product/:id` (product detail).
+- `NavButton.vue`: navigation links styled like buttons (`router-link`).
+- `Navbar.vue` and category cards use `router-link` instead of manual page state.
+- `ProductCard.vue`: „Auswählen“ links to the product detail view instead of an alert.
+- `main.js` registers the router; `index.html` loads `./src/main.js` relatively for GitHub Pages.
+- Shared `.btn` styles in `style.css` for `Button` and `NavButton`.

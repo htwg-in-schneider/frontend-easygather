@@ -1,5 +1,7 @@
 <script setup>
-import Button from '@/components/Button.vue'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import NavButton from '@/components/NavButton.vue'
 
 const props = defineProps({
   product: {
@@ -8,17 +10,24 @@ const props = defineProps({
   },
 })
 
+const route = useRoute()
+
+const productLink = computed(() => {
+  const query = {}
+  const category = route.query.category
+  if (typeof category === 'string' && category) {
+    query.returnCategory = category
+  }
+  return {
+    name: 'product',
+    params: { id: String(props.product.id) },
+    query,
+  }
+})
+
 function formatPrice(product) {
   const amount = `${product.price.toFixed(2).replace('.', ',')} EUR`
   return product.priceFrom ? `ab ${amount}` : amount
-}
-
-function showProductAlert() {
-  const product = props.product
-  const items = product.includedItems?.length
-    ? '\n\nEnthaltene Artikel:\n• ' + product.includedItems.join('\n• ')
-    : ''
-  alert(product.description + items)
 }
 </script>
 
@@ -28,7 +37,7 @@ function showProductAlert() {
     <h3>{{ product.title }}</h3>
     <p>{{ product.description }}</p>
     <span class="meta">{{ formatPrice(product) }}</span>
-    <Button variant="secondary" class="basket-btn" @click="showProductAlert">Auswählen</Button>
+    <NavButton :to="productLink" class="basket-btn">Auswählen</NavButton>
   </article>
 </template>
 

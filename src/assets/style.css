@@ -7,6 +7,51 @@
   --muted: #5c6b61;
 }
 
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  border-radius: 999px;
+  padding: 0.62rem 1.15rem;
+  font-weight: 700;
+  font-size: 0.94rem;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+}
+
+.btn-primary {
+  background: var(--moss);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--moss-dark);
+  color: #fff;
+}
+
+.btn-secondary {
+  border: 2px solid var(--moss);
+  color: var(--moss);
+  background: transparent;
+}
+
+.btn-secondary:hover {
+  background: rgba(61, 107, 79, 0.08);
+}
+
+.btn-register {
+  background: var(--moss);
+  color: #fff;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.88rem;
+}
+
+.btn-register:hover {
+  background: var(--moss-dark);
+  color: #fff;
+}
+
 *,
 *::before,
 *::after {
@@ -195,4 +240,100 @@ section h2 {
   .basket-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
+
+.product-detail-grid {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (min-width: 48rem) {
+  .product-detail-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.product-detail-image {
+  width: 100%;
+  border-radius: 1rem;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+}
+
+.product-detail h2 {
+  margin-top: 0;
+}
+
+.product-detail-price-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  margin: 0 0 1rem;
+  border: 1px solid rgba(61, 107, 79, 0.28);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.product-detail-price-label {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.product-detail-price-value {
+  font-weight: 700;
+  color: var(--terracotta);
+  font-size: 1.05rem;
+}
+
+.product-detail-description {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.product-detail-included-title {
+  margin: 0 0 0.65rem;
+  font-size: 1.25rem;
+  font-family: "Fraunces", Georgia, serif;
+}
+
+.product-detail-included {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+  color: var(--ink);
+}
+
+.product-detail-included li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  line-height: 1.45;
+}
+
+.product-detail-included li::before {
+  content: "✓";
+  flex-shrink: 0;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.product-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+}
+
+.product-detail-missing {
+  text-align: center;
+}
+
+.product-detail-missing p {
+  margin-bottom: 1rem;
+  color: var(--muted);
 }

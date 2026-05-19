@@ -1,0 +1,60 @@
+<script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { products } from '@/data.js'
+import NavButton from '@/components/NavButton.vue'
+import Button from '@/components/Button.vue'
+
+const route = useRoute()
+
+const product = computed(() =>
+  products.find((item) => String(item.id) === route.params.id),
+)
+
+const shopBackLink = computed(() => {
+  const returnCategory = route.query.returnCategory
+  if (typeof returnCategory === 'string' && returnCategory) {
+    return { path: '/shop', query: { category: returnCategory } }
+  }
+  return { path: '/shop' }
+})
+
+function formatPrice(item) {
+  const amount = `${item.price.toFixed(2).replace('.', ',')} EUR`
+  return item.priceFrom ? `ab ${amount}` : amount
+}
+
+function noop(event) {
+  event?.preventDefault()
+}
+</script>
+
+<template>
+  <section class="product-detail">
+    <div v-if="product" class="product-detail-grid">
+      <img :src="product.imageUrl" :alt="product.imageAlt" class="product-detail-image" />
+      <div>
+        <h2>{{ product.title }}</h2>
+        <div class="product-detail-price-box">
+          <span class="product-detail-price-label">Preis</span>
+          <span class="product-detail-price-value">{{ formatPrice(product) }}</span>
+        </div>
+        <p class="product-detail-description">{{ product.description }}</p>
+        <template v-if="product.includedItems?.length">
+          <h3 class="product-detail-included-title">Enthaltene Artikel</h3>
+          <ul class="product-detail-included">
+            <li v-for="(item, index) in product.includedItems" :key="index">{{ item }}</li>
+          </ul>
+        </template>
+        <div class="product-detail-actions">
+          <NavButton :to="shopBackLink">Zurück</NavButton>
+          <Button variant="primary" @click="noop">In den Warenkorb</Button>
+        </div>
+      </div>
+    </div>
+    <div v-else class="product-detail-missing">
+      <p>Produkt wurde nicht gefunden.</p>
+      <NavButton :to="shopBackLink">Zurück zum Shop</NavButton>
+    </div>
+  </section>
+</template>

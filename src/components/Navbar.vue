@@ -1,38 +1,29 @@
 <script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Button from '@/components/Button.vue'
 
-defineProps({
-  shopActive: {
-    type: Boolean,
-    default: false,
-  },
-})
+const route = useRoute()
 
-const emit = defineEmits(['home', 'shop', 'noop'])
+const shopActive = computed(
+  () => route.name === 'shop' || route.name === 'product',
+)
 
-function onHome(event) {
-  emit('home', event)
-}
-
-function onShop(event) {
-  emit('shop', event)
-}
-
-function onNoop(event) {
-  emit('noop', event)
+function noop(event) {
+  event?.preventDefault()
 }
 </script>
 
 <template>
   <header class="site-header">
     <div class="header-inner">
-      <a href="#" class="logo" @click="onHome">EasyGather</a>
+      <router-link to="/" class="logo">EasyGather</router-link>
       <nav class="nav-main">
-        <a href="#" @click="onNoop">Liefergebiet</a>
-        <a href="#" :class="{ 'nav-active': shopActive }" @click="onShop">Shop</a>
-        <a href="#" @click="onNoop">Warenkorb</a>
-        <a href="#" @click="onNoop">Anmelden</a>
-        <Button variant="register" href="#" @click="onNoop">Registrieren</Button>
+        <a href="#" @click.prevent="noop">Liefergebiet</a>
+        <router-link to="/shop" :class="{ 'nav-active': shopActive }">Shop</router-link>
+        <a href="#" @click.prevent="noop">Warenkorb</a>
+        <a href="#" @click.prevent="noop">Anmelden</a>
+        <Button variant="register" href="#" @click="noop">Registrieren</Button>
       </nav>
     </div>
   </header>
