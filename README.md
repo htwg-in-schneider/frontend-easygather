@@ -91,3 +91,14 @@ Made static product page from mock work as a Vue project:
 - `ProductCard.vue`: „Auswählen“ links to the product detail view instead of an alert.
 - `main.js` registers the router; `index.html` loads `./src/main.js` relatively for GitHub Pages.
 - Shared `.btn` styles in `style.css` for `Button` and `NavButton`.
+
+### Iteration 7: State management with Pinia
+
+- Integrated **Pinia** for simple global state (banner visibility across views).
+- `npm install pinia`
+- New store `src/stores/banner.js` with state `isVisible` and action `hideBanner()`.
+- Pinia registered in `main.js` via `createPinia()` and `app.use(pinia)`.
+- `SpecialBanner.vue` uses `useBannerStore()`; closing the banner calls `hideBanner()` and stays hidden when navigating between routes.
+- Banner placed in `App.vue` (visible on all pages until dismissed).
+
+**Hinweis:** Für EasyGather wäre ein globaler **Warenkorb-Store** (Artikelanzahl in der Navbar, „In den Warenkorb“ auf der Detailseite) inhaltlich die passendere bzw. eigenständigere Pinia-Nutzung. Wir orientieren uns in Iteration 7 am Beispielprojekt *saitenweise-frontend* (Banner-Sichtbarkeit). Ein echter Warenkorb mit Pinia ist für eine spätere Iteration vorgesehen und gehört bewusst **nicht** zum Umfang dieser Abgabe.

@@ -1,6 +1,7 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
+import SpecialBanner from '@/components/SpecialBanner.vue'
 
 function noop(event) {
   event?.preventDefault()
@@ -9,6 +10,7 @@ function noop(event) {
 
 <template>
   <Navbar />
+  <SpecialBanner />
   <main>
     <router-view />
   </main>
