@@ -51,12 +51,10 @@ Made static product page from mock work as a Vue project:
 
 - Source: index.html from static project
 - Images and CSS go into assets folder
-- favicon goes to public folder
-- index.html: link favicon and Google Fonts
+- index.html: Google Fonts
 - App.vue: Main content goes here. Logo link adapted.
 
 ### Iteration 2: GitHub Page deployment
 
 - Added `.github/workflows/build-and-deploy.js.yml` to deploy as GitHub Page.
 - Tweaked `vite.config.js` to use correct base URL - otherwise the JS files won't be loaded when hosted as a GitHub page.
-- favicon in public folder (from Iteration 1).
