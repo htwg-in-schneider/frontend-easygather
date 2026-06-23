@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuth0 } from '@auth0/auth0-vue'
 import {
   buildProductPayload,
   createProduct,
@@ -11,6 +12,7 @@ import Button from '@/components/Button.vue'
 import NavButton from '@/components/NavButton.vue'
 
 const router = useRouter()
+const { getAccessTokenSilently } = useAuth0()
 
 const form = ref({
   title: '',
@@ -52,7 +54,8 @@ async function submitCreate() {
     return
   }
   try {
-    await createProduct(buildProductPayload(form.value))
+    const token = await getAccessTokenSilently()
+    await createProduct(buildProductPayload(form.value), token)
     alert('Produkt erfolgreich erstellt!')
     router.push('/shop')
   } catch (error) {

@@ -8,6 +8,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  showEditButton: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const route = useRoute()
@@ -40,6 +44,7 @@ function formatPrice(product) {
     <div class="basket-card-actions">
       <NavButton :to="productLink" class="basket-btn">Auswählen</NavButton>
       <NavButton
+        v-if="showEditButton"
         :to="{ name: 'product-edit', params: { id: String(product.id) } }"
         variant="secondary"
         class="basket-btn-edit"

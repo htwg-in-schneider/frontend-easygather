@@ -1,10 +1,15 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, getCurrentInstance } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuth0 } from '@auth0/auth0-vue'
 import Button from '@/components/Button.vue'
 
 const route = useRoute()
 const router = useRouter()
+const auth0 = useAuth0()
+const isAuthenticated = auth0?.isAuthenticated
+const user = auth0?.user
+const isLoading = auth0?.isLoading
 
 const searchQuery = ref('')
 
@@ -15,6 +20,11 @@ watch(
   },
   { immediate: true },
 )
+
+function getAuth0Client() {
+  const fromGlobals = getCurrentInstance()?.appContext.config.globalProperties.$auth0
+  return fromGlobals ?? auth0
+}
 
 function noop(event) {
   event?.preventDefault()
@@ -30,6 +40,49 @@ function onSearchSubmit() {
   }
   router.push({ path: '/shop', query })
 }
+
+async function handleLogin(event) {
+  event?.preventDefault()
+
+  const auth0 = getAuth0Client()
+  if (!auth0?.loginWithRedirect) {
+    alert('Auth0 ist nicht initialisiert. Bitte npm run dev neu starten.')
+    return
+  }
+
+  if (auth0.isLoading?.value) {
+    return
+  }
+
+  if (window.location.search.includes('error=')) {
+    window.history.replaceState({}, '', window.location.pathname || '/')
+  }
+
+  try {
+    await auth0.loginWithRedirect()
+  } catch (error) {
+    console.error('Auth0 login failed:', error)
+    alert(`Anmeldung fehlgeschlagen: ${error?.message ?? error}`)
+  }
+}
+
+function handleLogout(event) {
+  event?.preventDefault()
+  const auth0 = getAuth0Client()
+  auth0?.logout({
+    logoutParams: {
+      returnTo: window.location.origin,
+    },
+  })
+}
+
+onMounted(() => {
+  const lastError = sessionStorage.getItem('auth0_last_error')
+  if (lastError) {
+    sessionStorage.removeItem('auth0_last_error')
+    alert(`Auth0-Fehler: ${lastError}`)
+  }
+})
 </script>
 
 <template>
@@ -51,7 +104,20 @@ function onSearchSubmit() {
         <a href="#" @click.prevent="noop">Liefergebiet</a>
         <router-link to="/shop">Shop</router-link>
         <a href="#" @click.prevent="noop">Warenkorb</a>
-        <a href="#" @click.prevent="noop">Anmelden</a>
+        <template v-if="!isLoading">
+          <button
+            v-if="!isAuthenticated"
+            type="button"
+            class="nav-auth-btn"
+            @click="handleLogin"
+          >
+            Anmelden
+          </button>
+          <template v-else>
+            <span class="nav-user">{{ user?.email }}</span>
+            <button type="button" class="nav-auth-btn" @click="handleLogout">Abmelden</button>
+          </template>
+        </template>
         <Button variant="register" href="#" @click="noop">Registrieren</Button>
       </nav>
     </div>
@@ -127,6 +193,30 @@ function onSearchSubmit() {
 .nav-main a.router-link-active {
   color: var(--moss-dark);
   font-weight: 700;
+}
+
+.nav-auth-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.nav-auth-btn:hover {
+  color: var(--moss-dark);
+}
+
+.nav-user {
+  font-size: 0.82rem;
+  color: var(--muted);
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (min-width: 52rem) {
