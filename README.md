@@ -137,3 +137,12 @@ Made static product page from mock work as a Vue project:
 - `ProductCatalog`: button **Neues Produkt** → `/product/create`.
 - `ProductCard`: **Bearbeiten** → `/product/edit/:id`; **Auswählen** → `/product/view/:id`.
 - Success and error feedback with simple `alert()` dialogs.
+
+### Iteration 11: User authentication with Auth0
+
+- Added `@auth0/auth0-vue` and Auth0 configuration in `.env.development` (`VITE_AUTH0_DOMAIN`, `VITE_AUTH0_CLIENT_ID`, `VITE_AUTH0_AUDIENCE`)
+- `main.js`: registered Auth0 plugin with audience and redirect URI (GitHub Pages compatible via `BASE_URL`)
+- `Navbar.vue`: real login via `loginWithRedirect()`, logout with return URL; shows user email when logged in; „Registrieren“ remains a placeholder
+- `backend.js`: `fetchProfile(accessToken)`; create/update/delete product send `Authorization: Bearer` header
+- `ProductCatalog.vue`: loads profile after login; shows „Neues Produkt“ and „Bearbeiten“ only for `ADMIN` role
+- `CreateProduct.vue` / `EditProduct.vue`: obtain access token via `getAccessTokenSilently()` for protected API calls
