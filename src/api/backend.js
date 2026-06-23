@@ -2,6 +2,13 @@ import { resolveProductImage } from '@/productImages.js'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8081'
 
+function authHeaders(accessToken) {
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${accessToken}`,
+  }
+}
+
 export function mapBackendProduct(item) {
   const { imageUrl, imageAlt } = resolveProductImage(item)
   return {
@@ -72,6 +79,16 @@ export async function fetchCategoryTranslations() {
   return response.json()
 }
 
+export async function fetchProfile(accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/profile`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
 export function buildProductPayload(form) {
   return {
     title: form.title,
@@ -82,10 +99,10 @@ export function buildProductPayload(form) {
   }
 }
 
-export async function createProduct(payload) {
+export async function createProduct(payload, accessToken) {
   const response = await fetch(`${API_BASE_URL}/api/product`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders(accessToken),
     body: JSON.stringify(payload),
   })
   if (!response.ok) {
@@ -94,10 +111,10 @@ export async function createProduct(payload) {
   return response.json()
 }
 
-export async function updateProduct(id, payload) {
+export async function updateProduct(id, payload, accessToken) {
   const response = await fetch(`${API_BASE_URL}/api/product/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders(accessToken),
     body: JSON.stringify(payload),
   })
   if (!response.ok) {
@@ -106,9 +123,10 @@ export async function updateProduct(id, payload) {
   return response.json()
 }
 
-export async function deleteProduct(id) {
+export async function deleteProduct(id, accessToken) {
   const response = await fetch(`${API_BASE_URL}/api/product/${id}`, {
     method: 'DELETE',
+    headers: { Authorization: `Bearer ${accessToken}` },
   })
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`)

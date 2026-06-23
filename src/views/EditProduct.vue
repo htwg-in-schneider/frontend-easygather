@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuth0 } from '@auth0/auth0-vue'
 import {
   buildProductPayload,
   deleteProduct,
@@ -15,6 +16,7 @@ import NavButton from '@/components/NavButton.vue'
 
 const route = useRoute()
 const router = useRouter()
+const { getAccessTokenSilently } = useAuth0()
 
 const form = ref({
   id: null,
@@ -88,7 +90,8 @@ async function submitUpdate() {
     return
   }
   try {
-    await updateProduct(form.value.id, buildProductPayload(form.value))
+    const token = await getAccessTokenSilently()
+    await updateProduct(form.value.id, buildProductPayload(form.value), token)
     alert('Produkt erfolgreich aktualisiert!')
     router.push('/shop')
   } catch (error) {
@@ -100,7 +103,8 @@ async function submitUpdate() {
 async function submitDelete() {
   if (!confirm('Möchten Sie dieses Produkt wirklich löschen?')) return
   try {
-    await deleteProduct(form.value.id)
+    const token = await getAccessTokenSilently()
+    await deleteProduct(form.value.id, token)
     alert('Produkt erfolgreich gelöscht!')
     router.push('/shop')
   } catch (error) {

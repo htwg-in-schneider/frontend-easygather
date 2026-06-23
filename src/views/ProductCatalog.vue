@@ -1,7 +1,8 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchProducts, fetchCategoryTranslations } from '@/api/backend.js'
+import { useAuth0 } from '@auth0/auth0-vue'
+import { fetchProducts, fetchCategoryTranslations, fetchProfile } from '@/api/backend.js'
 import ProductCard from '@/components/ProductCard.vue'
 import ProductFilterPanel from '@/components/ProductFilterPanel.vue'
 import Button from '@/components/Button.vue'
@@ -9,6 +10,7 @@ import NavButton from '@/components/NavButton.vue'
 
 const route = useRoute()
 const router = useRouter()
+const { isAuthenticated, getAccessTokenSilently } = useAuth0()
 
 const products = ref([])
 const loading = ref(true)
@@ -18,6 +20,7 @@ const selectedCategory = ref('')
 const selectedMaxPrice = ref('')
 const filterOpen = ref(false)
 const translations = ref({})
+const isAdmin = ref(false)
 
 const displayedProducts = computed(() => products.value)
 
@@ -37,6 +40,7 @@ onMounted(async () => {
   syncSearchFromRoute()
   syncMaxPriceFromRoute()
   await loadProducts(currentFilters())
+  await checkAdminRole()
 })
 
 watch(
@@ -48,6 +52,24 @@ watch(
     loadProducts(currentFilters())
   },
 )
+
+watch(isAuthenticated, () => {
+  checkAdminRole()
+})
+
+async function checkAdminRole() {
+  isAdmin.value = false
+  if (!isAuthenticated.value) {
+    return
+  }
+  try {
+    const token = await getAccessTokenSilently()
+    const profile = await fetchProfile(token)
+    isAdmin.value = profile.role === 'ADMIN'
+  } catch (err) {
+    console.error('Error checking admin role:', err)
+  }
+}
 
 async function loadTranslations() {
   try {
@@ -142,7 +164,9 @@ function updateFiltersInUrl() {
           <span v-if="activePriceLabel && searchName"> · </span>
           <span v-if="searchName">Suche: <strong>{{ searchName }}</strong></span>
         </p>
-        <NavButton to="/product/create" variant="primary" class="shop-create-btn">Neues Produkt</NavButton>
+        <NavButton v-if="isAdmin" to="/product/create" variant="primary" class="shop-create-btn">
+          Neues Produkt
+        </NavButton>
       </div>
       <Button
         type="button"
@@ -168,7 +192,12 @@ function updateFiltersInUrl() {
     <p v-else-if="displayedProducts.length === 0" class="section-text">Keine Produkte gefunden.</p>
 
     <div v-if="displayedProducts.length" class="basket-grid">
-      <ProductCard v-for="product in displayedProducts" :key="product.id" :product="product" />
+      <ProductCard
+        v-for="product in displayedProducts"
+        :key="product.id"
+        :product="product"
+        :show-edit-button="isAdmin"
+      />
     </div>
   </section>
 </template>
