@@ -12,12 +12,14 @@ import {
 } from '@/api/backend.js'
 import { resolveProductImage } from '@/productImages.js'
 import { notifyError, notifySuccess, notifyWarning } from '@/composables/useNotification.js'
+import { useAdminAccess } from '@/composables/useAdminAccess.js'
 import Button from '@/components/Button.vue'
 import NavButton from '@/components/NavButton.vue'
 
 const route = useRoute()
 const router = useRouter()
 const { getAccessTokenSilently } = useAuth0()
+const { ensureAdmin } = useAdminAccess()
 
 const form = ref({
   id: null,
@@ -43,6 +45,9 @@ const previewImage = computed(() => {
 })
 
 onMounted(async () => {
+  if (!(await ensureAdmin())) {
+    return
+  }
   await Promise.all([loadCategories(), loadTranslations(), loadProduct()])
   loading.value = false
 })

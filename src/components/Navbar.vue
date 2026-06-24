@@ -13,7 +13,7 @@ const router = useRouter()
 const auth0 = useAuth0()
 const isAuthenticated = auth0?.isAuthenticated
 const isLoading = auth0?.isLoading
-const { isFahrer, displayName } = useUserProfile()
+const { isFahrer, isAdmin, displayName } = useUserProfile()
 const cartStore = useCartStore()
 const { login } = useAuthLogin()
 
@@ -109,6 +109,9 @@ onMounted(() => {
           </button>
           <template v-else>
             <span v-if="isFahrer && displayName" class="nav-greeting">Hallo, {{ displayName }}</span>
+            <router-link v-if="isAdmin" to="/admin" class="nav-link nav-profile-link">
+              Administration
+            </router-link>
             <router-link v-if="!isFahrer" to="/orders" class="nav-link nav-profile-link">
               Meine Bestellungen
             </router-link>

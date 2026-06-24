@@ -2,7 +2,8 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth0 } from '@auth0/auth0-vue'
-import { fetchProducts, fetchCategoryTranslations, fetchProfile } from '@/api/backend.js'
+import { fetchProducts, fetchCategoryTranslations } from '@/api/backend.js'
+import { useUserProfile } from '@/composables/useUserProfile.js'
 import ProductCard from '@/components/ProductCard.vue'
 import ProductFilterPanel from '@/components/ProductFilterPanel.vue'
 import Button from '@/components/Button.vue'
@@ -10,7 +11,8 @@ import NavButton from '@/components/NavButton.vue'
 
 const route = useRoute()
 const router = useRouter()
-const { isAuthenticated, getAccessTokenSilently } = useAuth0()
+const { isAuthenticated } = useAuth0()
+const { isAdmin, refreshProfile } = useUserProfile()
 
 const products = ref([])
 const loading = ref(true)
@@ -20,7 +22,6 @@ const selectedCategory = ref('')
 const selectedMaxPrice = ref('')
 const filterOpen = ref(false)
 const translations = ref({})
-const isAdmin = ref(false)
 
 const displayedProducts = computed(() => products.value)
 
@@ -40,7 +41,9 @@ onMounted(async () => {
   syncSearchFromRoute()
   syncMaxPriceFromRoute()
   await loadProducts(currentFilters())
-  await checkAdminRole()
+  if (isAuthenticated.value) {
+    await refreshProfile()
+  }
 })
 
 watch(
@@ -53,23 +56,11 @@ watch(
   },
 )
 
-watch(isAuthenticated, () => {
-  checkAdminRole()
+watch(isAuthenticated, async (authed) => {
+  if (authed) {
+    await refreshProfile()
+  }
 })
-
-async function checkAdminRole() {
-  isAdmin.value = false
-  if (!isAuthenticated.value) {
-    return
-  }
-  try {
-    const token = await getAccessTokenSilently()
-    const profile = await fetchProfile(token)
-    isAdmin.value = profile.role === 'ADMIN'
-  } catch (err) {
-    console.error('Error checking admin role:', err)
-  }
-}
 
 async function loadTranslations() {
   try {

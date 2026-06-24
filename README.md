@@ -162,9 +162,9 @@ Made static product page from mock work as a Vue project:
 - `backend.js`: `updateProfile()` via `PUT /api/profile`
 - `Navbar.vue`: **Mein Profil** link when logged in (removed e-mail display in the nav)
 
-### Iteration 14: Checkout and order process (UC6–UC9)
+### Iteration 14: Checkout and order process
 
-- **Shopping cart** with Pinia (`cart.js`): add/remove items on product detail, quantity controls, cart badge in navbar; cart and coupon stored **per Auth0 account** in `localStorage` (guest cart separate from logged-in user)
+- **Shopping cart** with Pinia (`cart.js`): add/remove items on product detail, quantity controls, cart badge in navbar; cart stored **per Auth0 account** in `localStorage`. Guest cart merges into the account cart on login; on logout the visible cart is cleared (each account keeps its own saved cart)
 - **Checkout flow** across multiple views (login required at checkout via `authGuard` + `useAuthLogin` return path):
   - `CartView` – review items, remove confirmation, link to product detail
   - `CheckoutDeliveryView` – delivery address (prefilled from profile), required fields for order
@@ -184,4 +184,23 @@ Made static product page from mock work as a Vue project:
 - `DeliveryFilterPanel.vue`: status filter (same panel style as shop filter); default option **Alle Lieferaufträge**
 - Delivered orders (`geliefert`) are sorted to the end of the list automatically
 - `backend.js`: `fetchAssignedDeliveries()`, `updateDeliveryStatus()` via `/api/delivery/assigned` and `PUT /api/delivery/:id/status`
-- Customer checkout orders appear automatically in the driver dashboard (backend iteration 11); multi-driver accept and admin assignment are planned for later iterations.
+- Customer checkout orders appear automatically in the driver dashboard (backend iteration 11); driver accept workflow in iteration 17
+
+### Iteration 16: Admin area for master data (UC – Stammdaten)
+
+- New admin hub at `/admin` (protected with `authGuard` + admin role check via `useAdminAccess.js`)
+- **Categories:** list with search, create, edit, delete (`ConfirmModal` warns when products will be removed); routes `/admin/categories`, `/admin/categories/create`, `/admin/categories/edit/:id`
+- **Users:** list with search (name/e-mail), edit name, address, and role (`KUNDE` / `FAHRER` / `ADMIN`); routes `/admin/users`, `/admin/users/edit/:id`
+- **Orders (admin):** all customer orders with search at `/admin/orders`; detail reuses `OrderDetailView` at `/admin/orders/:id` with customer info
+- `Navbar.vue`: **Administration** link for `ADMIN` role; product create/edit routes now require login
+- `ProductCatalog.vue` uses shared `useUserProfile()` for admin buttons
+- `backend.js`: category/user/admin-order API helpers
+
+### Iteration 17: Driver accept workflow and order numbers
+
+- `DriverDashboardView.vue`: two sections – **Neue Lieferaufträge** (accept via **Mir zuweisen**) and **Deine zugewiesenen Lieferaufträge**
+- `backend.js`: `fetchDriverDashboard()`, `acceptDelivery()`, `updateDeliveryStatus()`; dashboard API returns `{ available, myDeliveries }`
+- Status dropdown only allows forward transitions (`angenommen` → `unterwegs` → `geliefert`); filter applies only to assigned deliveries
+- Order display uses **Bestellnummer** `EG-0001` instead of internal database IDs
+- `orderFormat.js`: `displayOrderNumber()`, customer labels **Unterwegs** / **Zugestellt**
+- Delivery cards show order date; list sorted newest first
