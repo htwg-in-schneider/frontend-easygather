@@ -1,8 +1,17 @@
 <script setup>
+import { ref } from 'vue'
 import { categories } from '@/data.js'
 import freundePicknickImg from '@/assets/FreundePicknick.jpg'
 import Button from '@/components/Button.vue'
 import NavButton from '@/components/NavButton.vue'
+
+const contactForm = ref({
+  name: '',
+  email: '',
+  message: '',
+})
+
+const contactEmail = 'kontakt@easygather.de'
 
 function getCategories() {
   return categories
@@ -10,6 +19,15 @@ function getCategories() {
 
 function noop(event) {
   event?.preventDefault()
+}
+
+function submitContact() {
+  const subject = encodeURIComponent(`Kontaktanfrage von ${contactForm.value.name}`)
+  const body = encodeURIComponent(
+    `Name: ${contactForm.value.name}\nE-Mail: ${contactForm.value.email}\n\n${contactForm.value.message}`,
+  )
+  window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`
+  contactForm.value = { name: '', email: '', message: '' }
 }
 </script>
 
@@ -55,5 +73,29 @@ function noop(event) {
         <span class="meta">{{ category.meta }}</span>
       </router-link>
     </div>
+  </section>
+
+  <section id="kontakt">
+    <h2>Kontakt</h2>
+    <p class="section-text">
+      Du hast Fragen zu EasyGather oder zu deiner Bestellung? Schreib uns – wir melden uns so schnell wie möglich.
+    </p>
+    <form class="product-form contact-form" @submit.prevent="submitContact">
+      <div class="product-form-field">
+        <label for="contactName">Name</label>
+        <input id="contactName" v-model="contactForm.name" type="text" required />
+      </div>
+      <div class="product-form-field">
+        <label for="contactEmail">E-Mail</label>
+        <input id="contactEmail" v-model="contactForm.email" type="email" required />
+      </div>
+      <div class="product-form-field">
+        <label for="contactMessage">Nachricht</label>
+        <textarea id="contactMessage" v-model="contactForm.message" rows="5" required />
+      </div>
+      <div class="product-form-actions">
+        <Button type="submit" variant="primary">Nachricht senden</Button>
+      </div>
+    </form>
   </section>
 </template>

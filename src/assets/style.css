@@ -75,6 +75,16 @@ body {
   background: linear-gradient(180deg, #faf6ef 0%, #f0eadf 45%, #ebe4d6 100%);
 }
 
+html {
+  scroll-padding-top: 10rem;
+}
+
+@media (min-width: 52rem) {
+  html {
+    scroll-padding-top: 4.75rem;
+  }
+}
+
 main {
   max-width: 72rem;
   margin: 0 auto;
@@ -467,4 +477,49 @@ section h2 {
   flex-wrap: wrap;
   gap: 0.65rem;
   margin-top: 0.5rem;
+}
+
+.contact-form {
+  max-width: 36rem;
+}
+
+#kontakt {
+  scroll-margin-top: 10rem;
+}
+
+@media (min-width: 52rem) {
+  #kontakt {
+    scroll-margin-top: 4.75rem;
+  }
+}
+
+.legal-page {
+  max-width: 42rem;
+}
+
+.legal-page h2 {
+  margin-top: 0;
+}
+
+.legal-page h3 {
+  margin: 1.4rem 0 0.45rem;
+  font-size: 1.15rem;
+}
+
+.legal-page p {
+  margin: 0 0 0.75rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.legal-page a {
+  color: var(--moss);
+}
+
+.legal-page a:hover {
+  color: var(--terracotta);
+}
+
+.legal-page-actions {
+  margin-top: 1.5rem;
 }

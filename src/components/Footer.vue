@@ -14,8 +14,9 @@ function onNoop(event) {
       <div>
         <h4>Informationen</h4>
         <ul>
+          <li><FooterLink text="Impressum" label="Impressum" to="/impressum" /></li>
+          <li><FooterLink text="Datenschutz" label="Datenschutz" to="/datenschutz" /></li>
           <li><FooterLink text="AGB" @click="onNoop" /></li>
-          <li><FooterLink text="Datenschutz" @click="onNoop" /></li>
           <li><FooterLink text="Widerrufsrecht" @click="onNoop" /></li>
         </ul>
       </div>
@@ -23,7 +24,7 @@ function onNoop(event) {
         <h4>EasyGather</h4>
         <ul>
           <li><FooterLink text="Über uns" @click="onNoop" /></li>
-          <li><FooterLink text="Kontakt" @click="onNoop" /></li>
+          <li><FooterLink text="Kontakt" label="Kontakt" :to="{ path: '/', hash: '#kontakt' }" /></li>
           <li><FooterLink text="Hilfe" @click="onNoop" /></li>
         </ul>
       </div>
