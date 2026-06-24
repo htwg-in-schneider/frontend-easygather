@@ -91,6 +91,14 @@ function categoryLabel(category) {
 }
 
 async function submitUpdate() {
+  if (!form.value.title.trim()) {
+    notifyWarning('Bitte einen Produktnamen angeben.')
+    return
+  }
+  if (form.value.price == null || form.value.price < 0) {
+    notifyWarning('Bitte einen gültigen Preis angeben.')
+    return
+  }
   if (!form.value.categoryId) {
     notifyWarning('Bitte eine Kategorie wählen.')
     return
