@@ -204,3 +204,11 @@ Made static product page from mock work as a Vue project:
 - Order display uses **Bestellnummer** `EG-0001` instead of internal database IDs
 - `orderFormat.js`: `displayOrderNumber()`, customer labels **Unterwegs** / **Zugestellt**
 - Delivery cards show order date; list sorted newest first
+
+### Iteration 18: Production deployment
+
+- `.env.production`: Auth0 settings and `VITE_API_BASE_URL` pointing to the Render backend
+- `.github/workflows/build-and-deploy.js.yml`: builds on push to `main` and deploys to GitHub Pages
+- Live frontend: **https://htwg-in-schneider.github.io/frontend-easygather/**
+- Live backend: **https://easygather-backend.onrender.com** (Spring Boot on Render, MariaDB from HTWG cloud)
+- Auth0 application must allow the GitHub Pages URL as callback, logout URL, and web origin
