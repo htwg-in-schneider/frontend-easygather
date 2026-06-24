@@ -8,7 +8,7 @@ import { useAuth0 } from '@auth0/auth0-vue'
 
 import { fetchOrderById } from '@/api/backend.js'
 
-import { formatEuro, orderStatusLabel, paymentMethodLabel } from '@/utils/orderFormat.js'
+import { formatEuro, orderStatusLabel, paymentMethodLabel, displayOrderNumber } from '@/utils/orderFormat.js'
 
 import { resolveOrderItemImage } from '@/utils/productImage.js'
 
@@ -74,7 +74,7 @@ onMounted(async () => {
 
       <p v-if="order" class="section-text">
 
-        Bestellung #{{ order.id }} · {{ formatDateTime(order.createdAt) }}
+        Bestellnummer {{ displayOrderNumber(order) }} · {{ formatDateTime(order.createdAt) }}
 
       </p>
 

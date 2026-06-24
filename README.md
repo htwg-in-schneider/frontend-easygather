@@ -184,4 +184,4 @@ Made static product page from mock work as a Vue project:
 - `DeliveryFilterPanel.vue`: status filter (same panel style as shop filter); default option **Alle Lieferaufträge**
 - Delivered orders (`geliefert`) are sorted to the end of the list automatically
 - `backend.js`: `fetchAssignedDeliveries()`, `updateDeliveryStatus()` via `/api/delivery/assigned` and `PUT /api/delivery/:id/status`
-- **Scope note:** orders are **sample data** seeded in the backend for the test driver account (`maloku.ardonesa+fahrer@gmail.com`). Linking to real customer checkout, multi-driver accept flow, and admin assignment is planned for a later iteration.
+- Customer checkout orders appear automatically in the driver dashboard (backend iteration 11); multi-driver accept and admin assignment are planned for later iterations.
