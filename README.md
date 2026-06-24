@@ -161,3 +161,16 @@ Made static product page from mock work as a Vue project:
 - E-mail and role are read-only; password section requests Auth0 change-password e-mail via Auth0 API
 - `backend.js`: `updateProfile()` via `PUT /api/profile`
 - `Navbar.vue`: **Mein Profil** link when logged in (removed e-mail display in the nav)
+
+### Iteration 14: Checkout and order process (UC6–UC9)
+
+- **Shopping cart** with Pinia (`cart.js`): add/remove items on product detail, quantity controls, cart badge in navbar; cart and coupon stored **per Auth0 account** in `localStorage` (guest cart separate from logged-in user)
+- **Checkout flow** across multiple views (login required at checkout via `authGuard` + `useAuthLogin` return path):
+  - `CartView` – review items, remove confirmation, link to product detail
+  - `CheckoutDeliveryView` – delivery address (prefilled from profile), required fields for order
+  - `CheckoutPaymentView` – payment method selection (card / PayPal / invoice, simulated UI only)
+  - `OrderConfirmationView` – success page after `POST /api/order`
+- **My orders:** `OrdersView` and `OrderDetailView` (`GET /api/order`, `GET /api/order/{id}`), reorder link to product detail
+- `AppAlert.vue` for success/error feedback instead of browser `alert()`; `ConfirmModal.vue` for cart item removal
+- Optional coupon code **EASY10** (10 % on subtotal) in cart and payment summary
+- Routes: `/cart`, `/checkout/delivery`, `/checkout/payment`, `/order/confirmation/:id`, `/orders`, `/orders/:id`

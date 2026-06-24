@@ -523,3 +523,66 @@ section h2 {
 .legal-page-actions {
   margin-top: 1.5rem;
 }
+
+.checkout-flow {
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.cart-page.checkout-flow,
+.checkout-page.checkout-flow,
+.orders-page.checkout-flow {
+  max-width: 56rem;
+}
+
+.checkout-flow-header {
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.checkout-flow-header h2 {
+  margin: 0.35rem 0 0.55rem;
+}
+
+.checkout-flow-header .section-text {
+  margin-bottom: 0;
+}
+
+.checkout-back-link {
+  margin-bottom: 0.75rem;
+}
+
+.checkout-step {
+  margin: 0 0 0.35rem;
+  color: var(--terracotta);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.checkout-form {
+  padding: 1.15rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.checkout-form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 40rem) {
+  .checkout-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.checkout-form-actions {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.field-required {
+  color: var(--terracotta);
+}

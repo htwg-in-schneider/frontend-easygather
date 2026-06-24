@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useAuth0 } from '@auth0/auth0-vue'
 import { fetchProfile, updateProfile } from '@/api/backend.js'
+import { notifyError, notifySuccess, notifyWarning } from '@/composables/useNotification.js'
 import Button from '@/components/Button.vue'
 import NavButton from '@/components/NavButton.vue'
 
@@ -42,7 +43,7 @@ async function requestPasswordResetEmail(event) {
   event?.preventDefault()
 
   if (!email.value || !auth0ClientId || !auth0Domain) {
-    alert('Passwort-Reset ist derzeit nicht verfügbar.')
+    notifyWarning('Passwort-Reset ist derzeit nicht verfügbar.')
     return
   }
 
@@ -58,13 +59,13 @@ async function requestPasswordResetEmail(event) {
       }),
     })
     if (response.ok) {
-      alert(`Auth0 hat eine E-Mail an ${email.value} geschickt. Dort kannst du dein Passwort ändern.`)
+      notifySuccess(`Eine E-Mail zum Zurücksetzen des Passworts wurde an ${email.value} gesendet.`)
     } else {
-      alert('Passwort-Reset-E-Mail konnte nicht angefordert werden.')
+      notifyError('Passwort-Reset-E-Mail konnte nicht angefordert werden.')
     }
   } catch (err) {
     console.error('Auth0 password reset failed:', err)
-    alert('Passwort-Reset-E-Mail konnte nicht angefordert werden.')
+    notifyError('Passwort-Reset-E-Mail konnte nicht angefordert werden.')
   } finally {
     passwordResetSending.value = false
   }
@@ -97,7 +98,24 @@ async function loadProfile() {
   }
 }
 
+function validateProfileForm() {
+  if (!form.value.firstName.trim() || !form.value.lastName.trim()) {
+    notifyWarning('Bitte gib Vor- und Nachname an.')
+    return false
+  }
+  const plz = form.value.postalCode.trim()
+  if (plz && !/^\d{5}$/.test(plz)) {
+    notifyWarning('Die PLZ muss aus 5 Ziffern bestehen.')
+    return false
+  }
+  return true
+}
+
 async function submitProfile() {
+  if (!validateProfileForm()) {
+    return
+  }
+
   saving.value = true
   error.value = ''
   try {
@@ -110,10 +128,11 @@ async function submitProfile() {
       postalCode: updated.postalCode ?? '',
       city: updated.city ?? '',
     }
-    alert('Profil erfolgreich gespeichert!')
+    notifySuccess('Profil erfolgreich gespeichert.')
   } catch (err) {
     console.error('Error updating profile:', err)
-    error.value = 'Profil konnte nicht gespeichert werden. Bitte alle Felder ausfüllen.'
+    error.value = 'Profil konnte nicht gespeichert werden.'
+    notifyError('Profil konnte nicht gespeichert werden.')
   } finally {
     saving.value = false
   }
@@ -121,60 +140,86 @@ async function submitProfile() {
 </script>
 
 <template>
-  <section class="product-form-page profile-page">
+  <section class="profile-page">
     <h2>Mein Profil</h2>
 
     <p v-if="loading" class="section-text">Profil wird geladen …</p>
     <p v-else-if="error" class="profile-error">{{ error }}</p>
 
-    <form v-else class="product-form" @submit.prevent="submitProfile">
-      <div class="product-form-field">
-        <label for="profileFirstName">Vorname</label>
-        <input id="profileFirstName" v-model="form.firstName" type="text" required />
-      </div>
-      <div class="product-form-field">
-        <label for="profileLastName">Nachname</label>
-        <input id="profileLastName" v-model="form.lastName" type="text" required />
-      </div>
-      <div class="product-form-field">
-        <label for="profileEmail">E-Mail</label>
-        <input id="profileEmail" :value="email" type="email" readonly />
-      </div>
-      <div class="product-form-field">
-        <label for="profileRole">Rolle</label>
-        <input id="profileRole" :value="roleLabel(role)" type="text" readonly />
-      </div>
-      <div class="product-form-field">
-        <label for="profileStreet">Straße und Hausnummer</label>
-        <input id="profileStreet" v-model="form.street" type="text" required />
-      </div>
-      <div class="product-form-field">
-        <label for="profilePostalCode">PLZ</label>
-        <input id="profilePostalCode" v-model="form.postalCode" type="text" required />
-      </div>
-      <div class="product-form-field">
-        <label for="profileCity">Ort</label>
-        <input id="profileCity" v-model="form.city" type="text" required />
+    <form v-else class="profile-form" @submit.prevent="submitProfile">
+      <div class="profile-card card">
+        <h3 class="profile-section-title">Persönliche Daten</h3>
+        <div class="profile-form-grid">
+          <div class="product-form-field">
+            <label for="profileFirstName">Vorname</label>
+            <input id="profileFirstName" v-model="form.firstName" type="text" autocomplete="given-name" />
+          </div>
+          <div class="product-form-field">
+            <label for="profileLastName">Nachname</label>
+            <input id="profileLastName" v-model="form.lastName" type="text" autocomplete="family-name" />
+          </div>
+        </div>
       </div>
 
-      <div class="profile-password-section">
-        <h3>Passwort</h3>
-        <p class="section-text">
-          Dein Passwort wird über Auth0 verwaltet und kann hier nicht direkt geändert werden.
-          Wenn du es ändern möchtest, fordere eine
-          <button
-            type="button"
-            class="profile-auth0-link"
-            :disabled="passwordResetSending"
-            @click="requestPasswordResetEmail"
-          >
-            Passwort-Reset-E-Mail bei Auth0
-          </button>
-          an. In der E-Mail findest du den Link zum Setzen eines neuen Passworts.
+      <div class="profile-card card">
+        <h3 class="profile-section-title">Konto</h3>
+        <div class="profile-account-grid">
+          <div class="product-form-field">
+            <label for="profileEmail">E-Mail</label>
+            <input id="profileEmail" :value="email" type="email" readonly />
+          </div>
+          <div class="product-form-field">
+            <label for="profileRole">Rolle</label>
+            <input id="profileRole" :value="roleLabel(role)" type="text" readonly />
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-card card">
+        <h3 class="profile-section-title">Lieferadresse</h3>
+        <p class="profile-section-note">
+          Hinterlege deine Standard-Lieferadresse für schnellere Bestellungen.
         </p>
+        <div class="product-form-field">
+          <label for="profileStreet">Straße und Hausnummer</label>
+          <input
+            id="profileStreet"
+            v-model="form.street"
+            type="text"
+            autocomplete="street-address"
+          />
+        </div>
+        <div class="profile-form-grid">
+          <div class="product-form-field">
+            <label for="profilePostalCode">PLZ</label>
+            <input
+              id="profilePostalCode"
+              v-model="form.postalCode"
+              type="text"
+              inputmode="numeric"
+              maxlength="5"
+            />
+          </div>
+          <div class="product-form-field">
+            <label for="profileCity">Ort</label>
+            <input id="profileCity" v-model="form.city" type="text" autocomplete="address-level2" />
+          </div>
+        </div>
       </div>
 
-      <div class="product-form-actions">
+      <div class="profile-card card">
+        <h3 class="profile-section-title">Anmeldedaten</h3>
+        <button
+          type="button"
+          class="profile-link-action"
+          :disabled="passwordResetSending"
+          @click="requestPasswordResetEmail"
+        >
+          {{ passwordResetSending ? 'Wird gesendet …' : 'Passwort zurücksetzen' }}
+        </button>
+      </div>
+
+      <div class="profile-form-actions">
         <NavButton to="/" variant="secondary">Zur Startseite</NavButton>
         <Button type="submit" variant="primary" :disabled="saving">
           {{ saving ? 'Speichern …' : 'Speichern' }}
@@ -185,40 +230,81 @@ async function submitProfile() {
 </template>
 
 <style scoped>
-.profile-page h3 {
-  margin: 1.25rem 0 0.35rem;
+.profile-page {
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.profile-page h2 {
+  margin: 0 0 1.25rem;
+  font-size: 1.6rem;
+}
+
+.profile-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.profile-card {
+  padding: 1.15rem 1.2rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.profile-section-title {
+  margin: 0;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(61, 107, 79, 0.14);
   font-size: 1.05rem;
 }
 
-.profile-password-section {
-  display: grid;
-  gap: 0.5rem;
-}
-
-.profile-password-section .section-text {
+.profile-section-note {
   margin: 0;
-  line-height: 1.6;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
 }
 
-.profile-auth0-link {
-  display: inline;
+.profile-form-grid,
+.profile-account-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+@media (min-width: 36rem) {
+  .profile-form-grid,
+  .profile-account-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.profile-link-action {
+  justify-self: start;
   padding: 0;
   border: none;
   background: none;
   color: var(--moss);
   font: inherit;
   font-weight: 600;
-  text-decoration: underline;
   cursor: pointer;
 }
 
-.profile-auth0-link:hover:not(:disabled) {
+.profile-link-action:hover:not(:disabled) {
   color: var(--terracotta);
+  text-decoration: underline;
 }
 
-.profile-auth0-link:disabled {
+.profile-link-action:disabled {
   opacity: 0.6;
   cursor: wait;
+}
+
+.profile-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: flex-end;
+  padding-top: 0.25rem;
 }
 
 .profile-error {
