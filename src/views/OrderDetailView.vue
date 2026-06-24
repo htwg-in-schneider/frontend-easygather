@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 import { useRoute } from 'vue-router'
 
@@ -14,6 +14,8 @@ import { resolveOrderItemImage } from '@/utils/productImage.js'
 
 import { formatDateTime } from '@/utils/dateFormat.js'
 
+import { useAdminAccess } from '@/composables/useAdminAccess.js'
+
 import NavButton from '@/components/NavButton.vue'
 
 
@@ -21,6 +23,16 @@ import NavButton from '@/components/NavButton.vue'
 const route = useRoute()
 
 const { getAccessTokenSilently } = useAuth0()
+
+const { ensureAdmin } = useAdminAccess()
+
+const isAdminRoute = computed(() => route.path.startsWith('/admin/orders/'))
+
+const backLink = computed(() => (isAdminRoute.value ? '/admin/orders' : '/orders'))
+
+const backLabel = computed(() =>
+  isAdminRoute.value ? '← Zurück zu Bestellungen' : '← Zurück zu Meine Bestellungen',
+)
 
 
 
@@ -33,7 +45,9 @@ const error = ref('')
 
 
 onMounted(async () => {
-
+  if (isAdminRoute.value && !(await ensureAdmin())) {
+    return
+  }
   try {
 
     const token = await getAccessTokenSilently()
@@ -64,9 +78,9 @@ onMounted(async () => {
 
     <header class="checkout-flow-header">
 
-      <NavButton to="/orders" variant="secondary" class="checkout-back-link">
+      <NavButton :to="backLink" variant="secondary" class="checkout-back-link">
 
-        ← Zurück zu Meine Bestellungen
+        {{ backLabel }}
 
       </NavButton>
 
@@ -117,6 +131,22 @@ onMounted(async () => {
             <strong>{{ formatEuro(order.total) }}</strong>
 
           </div>
+
+        </div>
+
+
+
+        <div v-if="order.customerEmail" class="order-detail-block">
+
+          <h3>Kunde</h3>
+
+          <p>
+
+            {{ order.customerFirstName }} {{ order.customerLastName }}<br />
+
+            {{ order.customerEmail }}
+
+          </p>
 
         </div>
 
