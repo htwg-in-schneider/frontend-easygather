@@ -1,7 +1,10 @@
 <script setup>
-import { ref, watch, onMounted, getCurrentInstance } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth0 } from '@auth0/auth0-vue'
+import { useCartStore } from '@/stores/cart.js'
+import { useAuthLogin } from '@/composables/useAuthLogin.js'
+import { notifyError } from '@/composables/useNotification.js'
 import Button from '@/components/Button.vue'
 
 const route = useRoute()
@@ -9,6 +12,8 @@ const router = useRouter()
 const auth0 = useAuth0()
 const isAuthenticated = auth0?.isAuthenticated
 const isLoading = auth0?.isLoading
+const cartStore = useCartStore()
+const { login } = useAuthLogin()
 
 const searchQuery = ref('')
 
@@ -19,11 +24,6 @@ watch(
   },
   { immediate: true },
 )
-
-function getAuth0Client() {
-  const fromGlobals = getCurrentInstance()?.appContext.config.globalProperties.$auth0
-  return fromGlobals ?? auth0
-}
 
 function noop(event) {
   event?.preventDefault()
@@ -42,32 +42,11 @@ function onSearchSubmit() {
 
 async function handleLogin(event) {
   event?.preventDefault()
-
-  const auth0 = getAuth0Client()
-  if (!auth0?.loginWithRedirect) {
-    alert('Auth0 ist nicht initialisiert. Bitte npm run dev neu starten.')
-    return
-  }
-
-  if (auth0.isLoading?.value) {
-    return
-  }
-
-  if (window.location.search.includes('error=')) {
-    window.history.replaceState({}, '', window.location.pathname || '/')
-  }
-
-  try {
-    await auth0.loginWithRedirect()
-  } catch (error) {
-    console.error('Auth0 login failed:', error)
-    alert(`Anmeldung fehlgeschlagen: ${error?.message ?? error}`)
-  }
+  await login(route.fullPath)
 }
 
 function handleLogout(event) {
   event?.preventDefault()
-  const auth0 = getAuth0Client()
   auth0?.logout({
     logoutParams: {
       returnTo: window.location.origin,
@@ -79,7 +58,7 @@ onMounted(() => {
   const lastError = sessionStorage.getItem('auth0_last_error')
   if (lastError) {
     sessionStorage.removeItem('auth0_last_error')
-    alert(`Auth0-Fehler: ${lastError}`)
+    notifyError(`Auth0-Fehler: ${lastError}`)
   }
 })
 </script>
@@ -100,21 +79,25 @@ onMounted(() => {
         </form>
       </div>
       <nav class="nav-main">
-        <a href="#" @click.prevent="noop">Liefergebiet</a>
-        <router-link to="/shop">Shop</router-link>
-        <a href="#" @click.prevent="noop">Warenkorb</a>
+        <a href="#" class="nav-link" @click.prevent="noop">Liefergebiet</a>
+        <router-link to="/shop" class="nav-link">Shop</router-link>
+        <router-link to="/cart" class="nav-link nav-cart-link">
+          Warenkorb
+          <span v-if="cartStore.itemCount" class="nav-cart-badge">{{ cartStore.itemCount }}</span>
+        </router-link>
         <template v-if="!isLoading">
           <button
             v-if="!isAuthenticated"
             type="button"
-            class="nav-auth-btn"
+            class="nav-link nav-auth-btn"
             @click="handleLogin"
           >
             Anmelden
           </button>
           <template v-else>
-            <router-link to="/profile" class="nav-profile-link">Mein Profil</router-link>
-            <button type="button" class="nav-auth-btn" @click="handleLogout">Abmelden</button>
+            <router-link to="/orders" class="nav-link nav-profile-link">Meine Bestellungen</router-link>
+            <router-link to="/profile" class="nav-link nav-profile-link">Mein Profil</router-link>
+            <button type="button" class="nav-link nav-auth-btn" @click="handleLogout">Abmelden</button>
           </template>
         </template>
         <Button variant="register" href="#" @click="noop">Registrieren</Button>
@@ -182,16 +165,20 @@ onMounted(() => {
   align-items: center;
 }
 
-.nav-main a {
+.nav-main .nav-link {
   color: var(--ink);
   font-size: 0.88rem;
   font-weight: 500;
   text-decoration: none;
+  display: inline-block;
+  transition: transform 0.15s ease, color 0.15s ease, font-weight 0.15s ease;
 }
 
-.nav-main a.router-link-active {
+.nav-main .nav-link:hover,
+.nav-main .nav-link.router-link-active {
   color: var(--moss-dark);
   font-weight: 700;
+  transform: scale(1.05);
 }
 
 .nav-auth-btn {
@@ -199,27 +186,31 @@ onMounted(() => {
   border: none;
   padding: 0;
   font: inherit;
-  font-size: 0.88rem;
-  font-weight: 500;
-  color: var(--ink);
   cursor: pointer;
 }
 
-.nav-auth-btn:hover {
-  color: var(--moss-dark);
-}
-
 .nav-profile-link {
-  color: var(--ink);
-  font-size: 0.88rem;
-  font-weight: 500;
-  text-decoration: none;
+  /* inherits .nav-link */
 }
 
-.nav-profile-link:hover,
-.nav-profile-link.router-link-active {
-  color: var(--moss-dark);
+.nav-cart-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.nav-cart-badge {
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--terracotta);
+  color: #fff;
+  font-size: 0.72rem;
   font-weight: 700;
+  line-height: 1.15rem;
+  text-align: center;
 }
 
 @media (min-width: 52rem) {
