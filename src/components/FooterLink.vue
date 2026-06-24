@@ -10,7 +10,11 @@ defineProps({
   },
   href: {
     type: String,
-    default: '#',
+    default: '',
+  },
+  to: {
+    type: [String, Object],
+    default: '',
   },
 })
 
@@ -18,7 +22,22 @@ const emit = defineEmits(['click'])
 </script>
 
 <template>
-  <a :href="href" class="footer-link" :aria-label="label || text" @click="emit('click', $event)">
+  <router-link
+    v-if="to"
+    :to="to"
+    class="footer-link"
+    :aria-label="label || text"
+    @click="emit('click', $event)"
+  >
+    {{ text }}
+  </router-link>
+  <a
+    v-else
+    :href="href || '#'"
+    class="footer-link"
+    :aria-label="label || text"
+    @click="emit('click', $event)"
+  >
     {{ text }}
   </a>
 </template>

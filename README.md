@@ -146,3 +146,11 @@ Made static product page from mock work as a Vue project:
 - `backend.js`: `fetchProfile(accessToken)`; create/update/delete product send `Authorization: Bearer` header
 - `ProductCatalog.vue`: loads profile after login; shows „Neues Produkt“ and „Bearbeiten“ only for `ADMIN` role
 - `CreateProduct.vue` / `EditProduct.vue`: obtain access token via `getAccessTokenSilently()` for protected API calls
+
+### Iteration 12: Start page with contact, imprint and privacy
+
+- `HomeView.vue`: new contact section with form (name, e-mail, message); submit opens `mailto:` with prefilled subject and body; form fields reset after submit
+- New views `ImpressumView.vue` and `DatenschutzView.vue` with static legal content
+- `router/index.js`: routes `/impressum` and `/datenschutz`; `scrollBehavior` scrolls to `#kontakt` below the sticky header
+- `FooterLink.vue`: optional `to` prop for internal `router-link` (like prof `FooterLink` with `href`, adapted for Vue Router)
+- `Footer.vue`: **Informationen** links Impressum and Datenschutz; **Kontakt** links to `/#kontakt`; AGB, Widerrufsrecht and other footer links remain placeholders for later iterations
