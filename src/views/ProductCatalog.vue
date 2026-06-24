@@ -120,6 +120,10 @@ function toggleFilter() {
   filterOpen.value = !filterOpen.value
 }
 
+function closeFilter() {
+  filterOpen.value = false
+}
+
 function applyFilters() {
   filterOpen.value = false
   updateFiltersInUrl()
@@ -185,6 +189,7 @@ function updateFiltersInUrl() {
       :open="filterOpen"
       @apply="applyFilters"
       @reset="resetFilters"
+      @close="closeFilter"
     />
 
     <p v-if="loading" class="section-text">Produkte werden geladen …</p>

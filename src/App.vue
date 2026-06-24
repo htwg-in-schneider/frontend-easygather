@@ -1,12 +1,18 @@
 <script setup>
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAuth0 } from '@auth0/auth0-vue'
 import Navbar from '@/components/Navbar.vue'
 import Footer from '@/components/Footer.vue'
 import SpecialBanner from '@/components/SpecialBanner.vue'
 import AppAlert from '@/components/AppAlert.vue'
+import { useUserProfile } from '@/composables/useUserProfile.js'
 import { useAuthLogin } from '@/composables/useAuthLogin.js'
 import { useCartStore, resolveCartUserKey } from '@/stores/cart.js'
+
+const route = useRoute()
+const { isFahrer } = useUserProfile()
+const showBanner = computed(() => !isFahrer.value && route.path !== '/lieferauftraege')
 
 const auth0 = useAuth0()
 const isAuthenticated = auth0?.isAuthenticated
@@ -44,7 +50,7 @@ function noop(event) {
 <template>
   <Navbar />
   <AppAlert />
-  <SpecialBanner />
+  <SpecialBanner v-if="showBanner" />
   <main>
     <router-view />
   </main>
