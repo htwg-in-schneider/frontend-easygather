@@ -154,3 +154,10 @@ Made static product page from mock work as a Vue project:
 - `router/index.js`: routes `/impressum` and `/datenschutz`; `scrollBehavior` scrolls to `#kontakt` below the sticky header
 - `FooterLink.vue`: optional `to` prop for internal `router-link` (like prof `FooterLink` with `href`, adapted for Vue Router)
 - `Footer.vue`: **Informationen** links Impressum and Datenschutz; **Kontakt** links to `/#kontakt`; AGB, Widerrufsrecht and other footer links remain placeholders for later iterations
+
+### Iteration 13: User profile page and profile update
+
+- New `ProfileView.vue` at `/profile` (protected with `authGuard`): edit first name, last name, street, postal code, and city
+- E-mail and role are read-only; password section requests Auth0 change-password e-mail via Auth0 API
+- `backend.js`: `updateProfile()` via `PUT /api/profile`
+- `Navbar.vue`: **Mein Profil** link when logged in (removed e-mail display in the nav)
