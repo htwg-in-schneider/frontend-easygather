@@ -89,6 +89,28 @@ export async function fetchProfile(accessToken) {
   return response.json()
 }
 
+export function buildProfilePayload(form) {
+  return {
+    firstName: form.firstName.trim(),
+    lastName: form.lastName.trim(),
+    street: form.street.trim(),
+    postalCode: form.postalCode.trim(),
+    city: form.city.trim(),
+  }
+}
+
+export async function updateProfile(form, accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/profile`, {
+    method: 'PUT',
+    headers: authHeaders(accessToken),
+    body: JSON.stringify(buildProfilePayload(form)),
+  })
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
 export function buildProductPayload(form) {
   return {
     title: form.title,
