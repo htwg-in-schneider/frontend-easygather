@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { authGuard } from '@auth0/auth0-vue'
 import HomeView from '@/views/HomeView.vue'
 import ImpressumView from '@/views/ImpressumView.vue'
 import DatenschutzView from '@/views/DatenschutzView.vue'
+import ProfileView from '@/views/ProfileView.vue'
 import ProductCatalog from '@/views/ProductCatalog.vue'
 import ProductDetail from '@/views/ProductDetail.vue'
 import CreateProduct from '@/views/CreateProduct.vue'
@@ -22,6 +24,12 @@ const routes = [
     path: '/datenschutz',
     name: 'datenschutz',
     component: DatenschutzView,
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: ProfileView,
+    beforeEnter: authGuard,
   },
   {
     path: '/shop',

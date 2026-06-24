@@ -8,7 +8,6 @@ const route = useRoute()
 const router = useRouter()
 const auth0 = useAuth0()
 const isAuthenticated = auth0?.isAuthenticated
-const user = auth0?.user
 const isLoading = auth0?.isLoading
 
 const searchQuery = ref('')
@@ -114,7 +113,7 @@ onMounted(() => {
             Anmelden
           </button>
           <template v-else>
-            <span class="nav-user">{{ user?.email }}</span>
+            <router-link to="/profile" class="nav-profile-link">Mein Profil</router-link>
             <button type="button" class="nav-auth-btn" @click="handleLogout">Abmelden</button>
           </template>
         </template>
@@ -210,13 +209,17 @@ onMounted(() => {
   color: var(--moss-dark);
 }
 
-.nav-user {
-  font-size: 0.82rem;
-  color: var(--muted);
-  max-width: 12rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.nav-profile-link {
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.nav-profile-link:hover,
+.nav-profile-link.router-link-active {
+  color: var(--moss-dark);
+  font-weight: 700;
 }
 
 @media (min-width: 52rem) {
