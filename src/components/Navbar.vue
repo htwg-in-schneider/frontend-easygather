@@ -7,12 +7,14 @@ import { useAuthLogin } from '@/composables/useAuthLogin.js'
 import { notifyError } from '@/composables/useNotification.js'
 import Button from '@/components/Button.vue'
 import { useUserProfile } from '@/composables/useUserProfile.js'
+import { resolveAdminSearchDestination } from '@/composables/useAdminGlobalSearch.js'
 
 const route = useRoute()
 const router = useRouter()
 const auth0 = useAuth0()
 const isAuthenticated = auth0?.isAuthenticated
 const isLoading = auth0?.isLoading
+const { getAccessTokenSilently } = auth0
 const { isFahrer, isAdmin, displayName } = useUserProfile()
 const cartStore = useCartStore()
 const { login } = useAuthLogin()
@@ -21,11 +23,31 @@ const searchQuery = ref('')
 
 const homeLink = computed(() => (isFahrer.value ? '/lieferauftraege' : '/'))
 const showCustomerNav = computed(() => !isFahrer.value)
+const showHeaderSearch = computed(() => showCustomerNav.value)
+const showCart = computed(() => showCustomerNav.value && !isAdmin.value)
+const showShop = computed(() => showCustomerNav.value && !isAdmin.value)
+const showMyOrders = computed(() => showCustomerNav.value && !isAdmin.value)
+const searchPlaceholder = computed(() =>
+  isAdmin.value ? 'Stammdaten durchsuchen …' : 'Produkte suchen …',
+)
+const searchAriaLabel = computed(() =>
+  isAdmin.value ? 'Administration durchsuchen' : 'Produkte suchen',
+)
 
 watch(
-  () => route.query.name,
-  (name) => {
-    searchQuery.value = typeof name === 'string' ? name : ''
+  () => [route.query.q, route.query.name],
+  ([q, name]) => {
+    if (typeof q === 'string' && q) {
+      searchQuery.value = q
+      return
+    }
+    if (typeof name === 'string' && name) {
+      searchQuery.value = name
+      return
+    }
+    if (!route.path.startsWith('/shop') && !route.path.startsWith('/admin')) {
+      searchQuery.value = ''
+    }
   },
   { immediate: true },
 )
@@ -34,9 +56,25 @@ function noop(event) {
   event?.preventDefault()
 }
 
-function onSearchSubmit() {
-  const query = { ...route.query }
+async function onSearchSubmit() {
   const term = searchQuery.value.trim()
+  if (isAdmin.value) {
+    if (!term) {
+      router.push('/admin')
+      return
+    }
+    try {
+      const token = await getAccessTokenSilently()
+      const destination = await resolveAdminSearchDestination(term, token)
+      router.push(destination)
+    } catch (err) {
+      console.error('Admin search failed:', err)
+      notifyError('Suche fehlgeschlagen.')
+    }
+    return
+  }
+
+  const query = { ...route.query }
   if (term) {
     query.name = term
   } else {
@@ -74,7 +112,7 @@ onMounted(() => {
       <div class="header-top">
         <router-link :to="homeLink" class="logo">EasyGather</router-link>
         <form
-          v-if="showCustomerNav"
+          v-if="showHeaderSearch"
           class="header-search"
           role="search"
           @submit.prevent="onSearchSubmit"
@@ -83,16 +121,16 @@ onMounted(() => {
             v-model="searchQuery"
             type="search"
             class="header-search-input"
-            placeholder="Suche …"
-            aria-label="Produkte suchen"
+            :placeholder="searchPlaceholder"
+            :aria-label="searchAriaLabel"
           />
         </form>
       </div>
       <nav class="nav-main">
         <template v-if="showCustomerNav">
           <a href="#" class="nav-link" @click.prevent="noop">Liefergebiet</a>
-          <router-link to="/shop" class="nav-link">Shop</router-link>
-          <router-link to="/cart" class="nav-link nav-cart-link">
+          <router-link v-if="showShop" to="/shop" class="nav-link">Shop</router-link>
+          <router-link v-if="showCart" to="/cart" class="nav-link nav-cart-link">
             Warenkorb
             <span v-if="cartStore.itemCount" class="nav-cart-badge">{{ cartStore.itemCount }}</span>
           </router-link>
@@ -112,7 +150,7 @@ onMounted(() => {
             <router-link v-if="isAdmin" to="/admin" class="nav-link nav-profile-link">
               Administration
             </router-link>
-            <router-link v-if="!isFahrer" to="/orders" class="nav-link nav-profile-link">
+            <router-link v-if="showMyOrders" to="/orders" class="nav-link nav-profile-link">
               Meine Bestellungen
             </router-link>
             <router-link to="/profile" class="nav-link nav-profile-link">Mein Profil</router-link>

@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAuth0 } from '@auth0/auth0-vue'
 import { fetchUsers } from '@/api/backend.js'
 import { useAdminAccess } from '@/composables/useAdminAccess.js'
@@ -9,10 +10,12 @@ import Button from '@/components/Button.vue'
 
 const { getAccessTokenSilently } = useAuth0()
 const { ensureAdmin } = useAdminAccess()
+const route = useRoute()
 
 const users = ref([])
 const loading = ref(true)
 const searchQuery = ref('')
+const roleFilter = ref('')
 
 function roleLabel(role) {
   switch (role) {
@@ -31,6 +34,9 @@ onMounted(async () => {
   if (!(await ensureAdmin())) {
     return
   }
+  if (typeof route.query.q === 'string') {
+    searchQuery.value = route.query.q
+  }
   await loadUsers()
 })
 
@@ -38,7 +44,7 @@ async function loadUsers() {
   loading.value = true
   try {
     const token = await getAccessTokenSilently()
-    users.value = await fetchUsers(token, searchQuery.value)
+    users.value = await fetchUsers(token, searchQuery.value, roleFilter.value)
   } catch (err) {
     console.error('Could not load users:', err)
     notifyError('Nutzer konnten nicht geladen werden.')
@@ -67,6 +73,12 @@ function onSearchSubmit() {
         placeholder="Nach Name oder E-Mail suchen …"
         aria-label="Nutzer suchen"
       />
+      <select v-model="roleFilter" class="role-filter" aria-label="Rolle filtern" @change="onSearchSubmit">
+        <option value="">Alle Rollen</option>
+        <option value="KUNDE">Kunden</option>
+        <option value="FAHRER">Fahrer</option>
+        <option value="ADMIN">Administratoren</option>
+      </select>
       <Button type="submit" variant="secondary">Suchen</Button>
     </form>
 
@@ -130,6 +142,14 @@ function onSearchSubmit() {
   border: 1px solid rgba(31, 45, 36, 0.18);
   border-radius: 0.5rem;
   font: inherit;
+}
+
+.role-filter {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(31, 45, 36, 0.18);
+  border-radius: 0.5rem;
+  font: inherit;
+  background: #fff;
 }
 
 .admin-table-wrap {

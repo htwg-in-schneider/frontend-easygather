@@ -1,16 +1,17 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuth0 } from '@auth0/auth0-vue'
 import { fetchAdminOrders } from '@/api/backend.js'
 import { useAdminAccess } from '@/composables/useAdminAccess.js'
-import { formatEuro, orderStatusLabel, paymentMethodLabel } from '@/utils/orderFormat.js'
+import { formatEuro, orderStatusLabel, paymentMethodLabel, displayOrderNumber } from '@/utils/orderFormat.js'
 import { formatDateTime } from '@/utils/dateFormat.js'
 import { notifyError } from '@/composables/useNotification.js'
 import NavButton from '@/components/NavButton.vue'
 import Button from '@/components/Button.vue'
 
 const router = useRouter()
+const route = useRoute()
 const { getAccessTokenSilently } = useAuth0()
 const { ensureAdmin } = useAdminAccess()
 
@@ -21,6 +22,9 @@ const searchQuery = ref('')
 onMounted(async () => {
   if (!(await ensureAdmin())) {
     return
+  }
+  if (typeof route.query.q === 'string') {
+    searchQuery.value = route.query.q
   }
   await loadOrders()
 })
@@ -79,7 +83,7 @@ function openOrder(id) {
       <li v-for="order in orders" :key="order.id">
         <button type="button" class="order-card card" @click="openOrder(order.id)">
           <div class="order-card-main">
-            <strong>Bestellung #{{ order.id }}</strong>
+            <strong>Bestellung {{ displayOrderNumber(order) }}</strong>
             <span>{{ formatDateTime(order.createdAt) }}</span>
           </div>
           <div class="order-card-meta">

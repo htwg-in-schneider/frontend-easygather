@@ -8,7 +8,7 @@ import { useAuth0 } from '@auth0/auth0-vue'
 
 import { fetchOrderById } from '@/api/backend.js'
 
-import { formatEuro, orderStatusLabel, paymentMethodLabel, displayOrderNumber } from '@/utils/orderFormat.js'
+import { formatEuro, orderStatusLabel, paymentMethodLabel, displayOrderNumber, deliveryStatusLabel } from '@/utils/orderFormat.js'
 
 import { resolveOrderItemImage } from '@/utils/productImage.js'
 
@@ -152,6 +152,36 @@ onMounted(async () => {
 
 
 
+        <div v-if="isAdminRoute && order.deliveryId" class="order-detail-block">
+
+          <h3>Lieferung</h3>
+
+          <p>
+
+            Status: <strong>{{ deliveryStatusLabel(order.deliveryStatus) }}</strong><br />
+
+            <template v-if="order.driverFirstName || order.driverLastName">
+
+              Fahrer: {{ order.driverFirstName }} {{ order.driverLastName }}
+
+              <span v-if="order.driverEmail">({{ order.driverEmail }})</span>
+
+            </template>
+
+            <template v-else>
+
+              Fahrer: <strong>Nicht zugewiesen</strong>
+
+            </template>
+
+          </p>
+
+          <NavButton to="/admin/deliveries" variant="secondary">Lieferaufträge verwalten</NavButton>
+
+        </div>
+
+
+
         <div class="order-detail-block">
 
           <h3>Lieferadresse</h3>
@@ -200,7 +230,7 @@ onMounted(async () => {
 
                 <NavButton
 
-                  v-if="item.productId"
+                  v-if="!isAdminRoute && item.productId"
 
                   :to="`/product/view/${item.productId}`"
 

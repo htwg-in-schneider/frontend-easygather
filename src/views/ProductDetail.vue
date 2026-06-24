@@ -5,10 +5,12 @@ import { fetchProductById } from '@/api/backend.js'
 import { useCartStore } from '@/stores/cart.js'
 import NavButton from '@/components/NavButton.vue'
 import Button from '@/components/Button.vue'
+import { useUserProfile } from '@/composables/useUserProfile.js'
 
 const route = useRoute()
 const router = useRouter()
 const cartStore = useCartStore()
+const { isAdmin } = useUserProfile()
 
 const product = ref(null)
 const loading = ref(true)
@@ -83,7 +85,14 @@ function addToCart() {
         </template>
         <div class="product-detail-actions">
           <NavButton :to="shopBackLink">Zurück</NavButton>
-          <Button variant="primary" @click="addToCart">In den Warenkorb</Button>
+          <NavButton
+            v-if="isAdmin"
+            :to="{ name: 'product-edit', params: { id: String(product.id) } }"
+            variant="primary"
+          >
+            Bearbeiten
+          </NavButton>
+          <Button v-else variant="primary" @click="addToCart">In den Warenkorb</Button>
         </div>
       </div>
     </div>

@@ -24,6 +24,12 @@ const imagesByCategory = {
   'essen-getraenke': { imageUrl: essenImg, imageAlt: 'Auswahl an Speisen und Getränken auf einem Tisch' },
 }
 
+const PLACEHOLDER_IMAGE_PATTERN = /picsum\.photos/
+
+export function isPlaceholderImageUrl(url) {
+  return !url || PLACEHOLDER_IMAGE_PATTERN.test(url)
+}
+
 export function resolveProductImage(item) {
   const byTitle = imagesByTitle[item.title]
   if (byTitle) {
@@ -34,4 +40,12 @@ export function resolveProductImage(item) {
     return imagesByCategory[shopCategory]
   }
   return { imageUrl: picknickkorbImg, imageAlt: item.title ?? 'Produktbild' }
+}
+
+/** Shop + Admin: eigenes Bild, sonst Standardbild zum Namen/Kategorie. */
+export function getProductDisplayImage(item) {
+  if (item.imageUrl && !isPlaceholderImageUrl(item.imageUrl)) {
+    return { imageUrl: item.imageUrl, imageAlt: item.title ?? 'Produktbild' }
+  }
+  return resolveProductImage(item)
 }
