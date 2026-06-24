@@ -15,6 +15,13 @@ import ProductDetail from '@/views/ProductDetail.vue'
 import CreateProduct from '@/views/CreateProduct.vue'
 import EditProduct from '@/views/EditProduct.vue'
 import DriverDashboardView from '@/views/DriverDashboardView.vue'
+import AdminView from '@/views/admin/AdminView.vue'
+import CategoriesAdminView from '@/views/admin/CategoriesAdminView.vue'
+import CreateCategoryView from '@/views/admin/CreateCategoryView.vue'
+import EditCategoryView from '@/views/admin/EditCategoryView.vue'
+import UsersAdminView from '@/views/admin/UsersAdminView.vue'
+import EditUserView from '@/views/admin/EditUserView.vue'
+import AdminOrdersView from '@/views/admin/AdminOrdersView.vue'
 
 const routes = [
   {
@@ -42,6 +49,54 @@ const routes = [
     path: '/lieferauftraege',
     name: 'driver-dashboard',
     component: DriverDashboardView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/admin',
+    name: 'admin',
+    component: AdminView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/admin/categories',
+    name: 'admin-categories',
+    component: CategoriesAdminView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/admin/categories/create',
+    name: 'admin-category-create',
+    component: CreateCategoryView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/admin/categories/edit/:id',
+    name: 'admin-category-edit',
+    component: EditCategoryView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/admin/users',
+    name: 'admin-users',
+    component: UsersAdminView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/admin/users/edit/:id',
+    name: 'admin-user-edit',
+    component: EditUserView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/admin/orders',
+    name: 'admin-orders',
+    component: AdminOrdersView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/admin/orders/:id',
+    name: 'admin-order-detail',
+    component: OrderDetailView,
     beforeEnter: authGuard,
   },
   {
@@ -93,11 +148,13 @@ const routes = [
     path: '/product/create',
     name: 'product-create',
     component: CreateProduct,
+    beforeEnter: authGuard,
   },
   {
     path: '/product/edit/:id',
     name: 'product-edit',
     component: EditProduct,
+    beforeEnter: authGuard,
   },
 ]
 
