@@ -9,11 +9,13 @@ import {
   fetchCategoryTranslations,
 } from '@/api/backend.js'
 import { notifyError, notifySuccess, notifyWarning } from '@/composables/useNotification.js'
+import { useAdminAccess } from '@/composables/useAdminAccess.js'
 import Button from '@/components/Button.vue'
 import NavButton from '@/components/NavButton.vue'
 
 const router = useRouter()
 const { getAccessTokenSilently } = useAuth0()
+const { ensureAdmin } = useAdminAccess()
 
 const form = ref({
   title: '',
@@ -26,6 +28,9 @@ const categories = ref([])
 const translations = ref({})
 
 onMounted(async () => {
+  if (!(await ensureAdmin())) {
+    return
+  }
   await Promise.all([loadCategories(), loadTranslations()])
 })
 

@@ -15,6 +15,33 @@ function couponStorageKey(userKey) {
   return `cartCoupon:${userKey}`
 }
 
+function mergeCartItems(targetItems, sourceItems) {
+  const merged = targetItems.map((item) => ({ ...item }))
+  for (const source of sourceItems) {
+    const existing = merged.find((item) => item.id === source.id)
+    if (existing) {
+      existing.quantity += source.quantity
+    } else {
+      merged.push({ ...source })
+    }
+  }
+  return merged
+}
+
+function readStoredItems(userKey) {
+  const storedItems = localStorage.getItem(itemsStorageKey(userKey))
+  return storedItems ? JSON.parse(storedItems) : []
+}
+
+function readStoredCoupon(userKey) {
+  return localStorage.getItem(couponStorageKey(userKey)) ?? ''
+}
+
+function clearStoredCart(userKey) {
+  localStorage.removeItem(itemsStorageKey(userKey))
+  localStorage.removeItem(couponStorageKey(userKey))
+}
+
 export const useCartStore = defineStore('cart', () => {
   let activeUserKey = GUEST_KEY
 
@@ -46,9 +73,47 @@ export const useCartStore = defineStore('cart', () => {
     if (nextKey === activeUserKey) {
       return
     }
-    persistCart()
+
+    const leavingKey = activeUserKey
+
+    if (leavingKey !== GUEST_KEY) {
+      persistCart()
+    }
+
+    if (nextKey === GUEST_KEY) {
+      activeUserKey = GUEST_KEY
+      items.value = []
+      appliedCoupon.value = ''
+      couponMessage.value = ''
+      couponError.value = false
+      clearStoredCart(GUEST_KEY)
+      return
+    }
+
+    if (leavingKey === GUEST_KEY) {
+      const guestItems =
+        items.value.length > 0
+          ? items.value.map((item) => ({ ...item }))
+          : readStoredItems(GUEST_KEY)
+      const guestCoupon =
+        items.value.length > 0 ? appliedCoupon.value : readStoredCoupon(GUEST_KEY)
+
+      if (guestItems.length > 0) {
+        activeUserKey = nextKey
+        items.value = mergeCartItems(readStoredItems(nextKey), guestItems)
+        appliedCoupon.value = readStoredCoupon(nextKey) || guestCoupon
+        couponMessage.value = ''
+        couponError.value = false
+        clearStoredCart(GUEST_KEY)
+        persistCart()
+        return
+      }
+    }
+
     loadCartForUser(nextKey)
   }
+
+  loadCartForUser(GUEST_KEY)
 
   watch(items, persistCart, { deep: true })
   watch(appliedCoupon, persistCart)

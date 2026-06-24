@@ -63,8 +63,22 @@ export async function fetchRawProductById(id) {
   return response.json()
 }
 
-export async function fetchCategories() {
-  const response = await fetch(`${API_BASE_URL}/api/category`)
+export async function fetchCategories(filters = {}) {
+  const params = new URLSearchParams()
+  if (filters.title?.trim()) {
+    params.append('title', filters.title.trim())
+  }
+  const query = params.toString()
+  const url = query ? `${API_BASE_URL}/api/category?${query}` : `${API_BASE_URL}/api/category`
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+export async function fetchCategoryById(id) {
+  const response = await fetch(`${API_BASE_URL}/api/category/${id}`)
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`)
   }
@@ -222,6 +236,117 @@ export async function updateDeliveryStatus(id, status, accessToken) {
     method: 'PUT',
     headers: authHeaders(accessToken),
     body: JSON.stringify({ status }),
+  })
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+export function buildCategoryPayload(form) {
+  return {
+    title: form.title.trim(),
+    shopCategory: form.shopCategory.trim(),
+  }
+}
+
+export async function createCategory(payload, accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/category`, {
+    method: 'POST',
+    headers: authHeaders(accessToken),
+    body: JSON.stringify(payload),
+  })
+  if (!response.ok) {
+    const message = await response.text()
+    throw new Error(message || `HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+export async function updateCategory(id, payload, accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/category/${id}`, {
+    method: 'PUT',
+    headers: authHeaders(accessToken),
+    body: JSON.stringify(payload),
+  })
+  if (!response.ok) {
+    const message = await response.text()
+    throw new Error(message || `HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+export async function deleteCategory(id, accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/category/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+}
+
+export async function fetchUsers(accessToken, q = '') {
+  const params = new URLSearchParams()
+  if (q.trim()) {
+    params.append('q', q.trim())
+  }
+  const query = params.toString()
+  const url = query ? `${API_BASE_URL}/api/user?${query}` : `${API_BASE_URL}/api/user`
+  const response = await fetch(url, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+export async function fetchUserById(id, accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/user/${id}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+export function buildAdminUserPayload(form) {
+  return {
+    firstName: form.firstName.trim(),
+    lastName: form.lastName.trim(),
+    street: form.street.trim(),
+    postalCode: form.postalCode.trim(),
+    city: form.city.trim(),
+    role: form.role,
+  }
+}
+
+export async function updateUserByAdmin(id, payload, accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/user/${id}`, {
+    method: 'PUT',
+    headers: authHeaders(accessToken),
+    body: JSON.stringify(payload),
+  })
+  if (!response.ok) {
+    const message = await response.text()
+    throw new Error(message || `HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+export async function fetchAdminOrders(accessToken, q = '') {
+  const params = new URLSearchParams()
+  if (q.trim()) {
+    params.append('q', q.trim())
+  }
+  const query = params.toString()
+  const url = query
+    ? `${API_BASE_URL}/api/order/admin/all?${query}`
+    : `${API_BASE_URL}/api/order/admin/all`
+  const response = await fetch(url, {
+    headers: { Authorization: `Bearer ${accessToken}` },
   })
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`)
