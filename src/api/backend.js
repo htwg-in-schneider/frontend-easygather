@@ -155,6 +155,58 @@ export async function deleteProduct(id, accessToken) {
   }
 }
 
+export function buildOrderPayload(cartItems, checkout, appliedCoupon = '') {
+  const payload = {
+    items: cartItems.map((item) => ({
+      productId: item.id,
+      quantity: item.quantity,
+    })),
+    address: {
+      street: checkout.delivery.street.trim(),
+      postalCode: checkout.delivery.postalCode.trim(),
+      city: checkout.delivery.city.trim(),
+    },
+    paymentMethod: checkout.paymentMethod,
+  }
+  if (appliedCoupon) {
+    payload.couponCode = appliedCoupon
+  }
+  return payload
+}
+
+export async function placeOrder(payload, accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/order`, {
+    method: 'POST',
+    headers: authHeaders(accessToken),
+    body: JSON.stringify(payload),
+  })
+  if (!response.ok) {
+    const message = await response.text()
+    throw new Error(message || `HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+export async function fetchMyOrders(accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/order`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+export async function fetchOrderById(id, accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/order/${id}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
 export async function fetchAssignedDeliveries(accessToken) {
   const response = await fetch(`${API_BASE_URL}/api/delivery/assigned`, {
     headers: { Authorization: `Bearer ${accessToken}` },

@@ -11,6 +11,7 @@ import {
   updateProduct,
 } from '@/api/backend.js'
 import { resolveProductImage } from '@/productImages.js'
+import { notifyError, notifySuccess, notifyWarning } from '@/composables/useNotification.js'
 import Button from '@/components/Button.vue'
 import NavButton from '@/components/NavButton.vue'
 
@@ -75,7 +76,7 @@ async function loadProduct() {
     }
   } catch (error) {
     console.error('Fehler beim Laden des Produkts:', error)
-    alert('Produkt konnte nicht geladen werden.')
+    notifyError('Produkt konnte nicht geladen werden.')
     router.push('/shop')
   }
 }
@@ -86,17 +87,17 @@ function categoryLabel(category) {
 
 async function submitUpdate() {
   if (!form.value.categoryId) {
-    alert('Bitte eine Kategorie wählen.')
+    notifyWarning('Bitte eine Kategorie wählen.')
     return
   }
   try {
     const token = await getAccessTokenSilently()
     await updateProduct(form.value.id, buildProductPayload(form.value), token)
-    alert('Produkt erfolgreich aktualisiert!')
-    router.push('/shop')
+    notifySuccess('Produkt erfolgreich aktualisiert.')
+    setTimeout(() => router.push('/shop'), 1200)
   } catch (error) {
     console.error('Fehler beim Aktualisieren des Produkts:', error)
-    alert('Produkt konnte nicht aktualisiert werden.')
+    notifyError('Produkt konnte nicht aktualisiert werden.')
   }
 }
 
@@ -105,11 +106,11 @@ async function submitDelete() {
   try {
     const token = await getAccessTokenSilently()
     await deleteProduct(form.value.id, token)
-    alert('Produkt erfolgreich gelöscht!')
-    router.push('/shop')
+    notifySuccess('Produkt erfolgreich gelöscht.')
+    setTimeout(() => router.push('/shop'), 1200)
   } catch (error) {
     console.error('Fehler beim Löschen des Produkts:', error)
-    alert('Produkt konnte nicht gelöscht werden.')
+    notifyError('Produkt konnte nicht gelöscht werden.')
   }
 }
 </script>

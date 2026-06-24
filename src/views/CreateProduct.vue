@@ -8,6 +8,7 @@ import {
   fetchCategories,
   fetchCategoryTranslations,
 } from '@/api/backend.js'
+import { notifyError, notifySuccess, notifyWarning } from '@/composables/useNotification.js'
 import Button from '@/components/Button.vue'
 import NavButton from '@/components/NavButton.vue'
 
@@ -50,17 +51,17 @@ function categoryLabel(category) {
 
 async function submitCreate() {
   if (!form.value.categoryId) {
-    alert('Bitte eine Kategorie wählen.')
+    notifyWarning('Bitte eine Kategorie wählen.')
     return
   }
   try {
     const token = await getAccessTokenSilently()
     await createProduct(buildProductPayload(form.value), token)
-    alert('Produkt erfolgreich erstellt!')
-    router.push('/shop')
+    notifySuccess('Produkt erfolgreich erstellt.')
+    setTimeout(() => router.push('/shop'), 1200)
   } catch (error) {
     console.error('Fehler beim Erstellen des Produkts:', error)
-    alert('Produkt konnte nicht erstellt werden.')
+    notifyError('Produkt konnte nicht erstellt werden.')
   }
 }
 </script>

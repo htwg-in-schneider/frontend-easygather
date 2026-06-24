@@ -1,11 +1,14 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { fetchProductById } from '@/api/backend.js'
+import { useCartStore } from '@/stores/cart.js'
 import NavButton from '@/components/NavButton.vue'
 import Button from '@/components/Button.vue'
 
 const route = useRoute()
+const router = useRouter()
+const cartStore = useCartStore()
 
 const product = ref(null)
 const loading = ref(true)
@@ -49,8 +52,12 @@ function formatPrice(item) {
   return item.priceFrom ? `ab ${amount}` : amount
 }
 
-function noop(event) {
-  event?.preventDefault()
+function addToCart() {
+  if (!product.value) {
+    return
+  }
+  cartStore.addToCart(product.value)
+  router.push('/cart')
 }
 </script>
 
@@ -76,7 +83,7 @@ function noop(event) {
         </template>
         <div class="product-detail-actions">
           <NavButton :to="shopBackLink">Zurück</NavButton>
-          <Button variant="primary" @click="noop">In den Warenkorb</Button>
+          <Button variant="primary" @click="addToCart">In den Warenkorb</Button>
         </div>
       </div>
     </div>
