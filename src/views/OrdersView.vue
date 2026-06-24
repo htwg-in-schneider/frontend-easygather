@@ -8,7 +8,7 @@ import { useAuth0 } from '@auth0/auth0-vue'
 
 import { fetchMyOrders } from '@/api/backend.js'
 
-import { formatEuro, orderStatusLabel, paymentMethodLabel } from '@/utils/orderFormat.js'
+import { formatEuro, orderStatusLabel, paymentMethodLabel, displayOrderNumber } from '@/utils/orderFormat.js'
 
 import { formatDateTime } from '@/utils/dateFormat.js'
 
@@ -140,7 +140,7 @@ function openOrder(orderId) {
 
             <div class="orders-card-header">
 
-              <h3>Bestellung #{{ order.id }}</h3>
+              <h3>Bestellnummer {{ displayOrderNumber(order) }}</h3>
 
               <span class="orders-status">{{ orderStatusLabel(order.status) }}</span>
 

@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuth0 } from '@auth0/auth0-vue'
 import { fetchOrderById } from '@/api/backend.js'
-import { formatEuro, orderStatusLabel, paymentMethodLabel } from '@/utils/orderFormat.js'
+import { formatEuro, orderStatusLabel, paymentMethodLabel, displayOrderNumber } from '@/utils/orderFormat.js'
 import { formatDateTime } from '@/utils/dateFormat.js'
 import NavButton from '@/components/NavButton.vue'
 
@@ -47,7 +47,7 @@ onMounted(async () => {
           <span class="order-info-icon" aria-hidden="true">📄</span>
           <div>
             <small>Bestellnummer</small>
-            <strong>#{{ order.id }}</strong>
+            <strong>{{ displayOrderNumber(order) }}</strong>
           </div>
         </div>
         <div class="order-info-item">
