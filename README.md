@@ -184,7 +184,7 @@ Made static product page from mock work as a Vue project:
 - `DeliveryFilterPanel.vue`: status filter (same panel style as shop filter); default option **Alle Lieferaufträge**
 - Delivered orders (`geliefert`) are sorted to the end of the list automatically
 - `backend.js`: `fetchAssignedDeliveries()`, `updateDeliveryStatus()` via `/api/delivery/assigned` and `PUT /api/delivery/:id/status`
-- **Scope note:** orders are **sample data** seeded in the backend for the test driver account (`maloku.ardonesa+fahrer@gmail.com`). Linking to real customer checkout, multi-driver accept flow, and admin assignment is planned for a later iteration.
+- Customer checkout orders appear automatically in the driver dashboard (backend iteration 11); driver accept workflow in iteration 17
 
 ### Iteration 16: Admin area for master data (UC – Stammdaten)
 
@@ -195,3 +195,12 @@ Made static product page from mock work as a Vue project:
 - `Navbar.vue`: **Administration** link for `ADMIN` role; product create/edit routes now require login
 - `ProductCatalog.vue` uses shared `useUserProfile()` for admin buttons
 - `backend.js`: category/user/admin-order API helpers
+
+### Iteration 17: Driver accept workflow and order numbers
+
+- `DriverDashboardView.vue`: two sections – **Neue Lieferaufträge** (accept via **Mir zuweisen**) and **Deine zugewiesenen Lieferaufträge**
+- `backend.js`: `fetchDriverDashboard()`, `acceptDelivery()`, `updateDeliveryStatus()`; dashboard API returns `{ available, myDeliveries }`
+- Status dropdown only allows forward transitions (`angenommen` → `unterwegs` → `geliefert`); filter applies only to assigned deliveries
+- Order display uses **Bestellnummer** `EG-0001` instead of internal database IDs
+- `orderFormat.js`: `displayOrderNumber()`, customer labels **Unterwegs** / **Zugestellt**
+- Delivery cards show order date; list sorted newest first

@@ -2,12 +2,24 @@ export function formatEuro(amount) {
   return `${Number(amount).toFixed(2).replace('.', ',')} €`
 }
 
+export function displayOrderNumber(order) {
+  if (order?.orderNumber) {
+    return order.orderNumber
+  }
+  if (order?.id != null) {
+    return `EG-${String(order.id).padStart(4, '0')}`
+  }
+  return ''
+}
+
 export function orderStatusLabel(status) {
   switch (status) {
     case 'BESTAETIGT':
       return 'Bestätigt'
+    case 'UNTERWEGS':
+      return 'Unterwegs'
     case 'ABGESCHLOSSEN':
-      return 'Abgeschlossen'
+      return 'Zugestellt'
     default:
       return status
   }

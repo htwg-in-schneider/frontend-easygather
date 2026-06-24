@@ -221,10 +221,24 @@ export async function fetchOrderById(id, accessToken) {
   return response.json()
 }
 
-export async function fetchAssignedDeliveries(accessToken) {
+export async function fetchDriverDashboard(accessToken) {
   const response = await fetch(`${API_BASE_URL}/api/delivery/assigned`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   })
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+export async function acceptDelivery(id, accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/delivery/${id}/accept`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (response.status === 409) {
+    throw new Error('DELIVERY_ALREADY_ACCEPTED')
+  }
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`)
   }

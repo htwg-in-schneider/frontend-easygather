@@ -194,7 +194,6 @@ function continueToPayment() {
       <div class="product-form-field">
 
         <label for="deliveryPhone">Telefonnummer <span class="field-required">*</span></label>
-
         <input id="deliveryPhone" v-model="checkoutStore.delivery.phone" type="tel" required autocomplete="tel" placeholder="0151 12345678" />
 
       </div>
