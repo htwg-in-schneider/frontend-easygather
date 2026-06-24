@@ -4,6 +4,12 @@ import HomeView from '@/views/HomeView.vue'
 import ImpressumView from '@/views/ImpressumView.vue'
 import DatenschutzView from '@/views/DatenschutzView.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import CartView from '@/views/CartView.vue'
+import CheckoutDeliveryView from '@/views/CheckoutDeliveryView.vue'
+import CheckoutPaymentView from '@/views/CheckoutPaymentView.vue'
+import OrderConfirmationView from '@/views/OrderConfirmationView.vue'
+import OrderDetailView from '@/views/OrderDetailView.vue'
+import OrdersView from '@/views/OrdersView.vue'
 import ProductCatalog from '@/views/ProductCatalog.vue'
 import ProductDetail from '@/views/ProductDetail.vue'
 import CreateProduct from '@/views/CreateProduct.vue'
@@ -29,6 +35,41 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: ProfileView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/cart',
+    name: 'cart',
+    component: CartView,
+  },
+  {
+    path: '/checkout/delivery',
+    name: 'checkout-delivery',
+    component: CheckoutDeliveryView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/checkout/payment',
+    name: 'checkout-payment',
+    component: CheckoutPaymentView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/order/confirmation/:id',
+    name: 'order-confirmation',
+    component: OrderConfirmationView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/orders',
+    name: 'orders',
+    component: OrdersView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/orders/:id',
+    name: 'order-detail',
+    component: OrderDetailView,
     beforeEnter: authGuard,
   },
   {
