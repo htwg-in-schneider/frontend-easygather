@@ -154,3 +154,25 @@ export async function deleteProduct(id, accessToken) {
     throw new Error(`HTTP error! status: ${response.status}`)
   }
 }
+
+export async function fetchAssignedDeliveries(accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/delivery/assigned`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+export async function updateDeliveryStatus(id, status, accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/delivery/${id}/status`, {
+    method: 'PUT',
+    headers: authHeaders(accessToken),
+    body: JSON.stringify({ status }),
+  })
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}

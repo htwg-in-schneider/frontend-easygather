@@ -1,16 +1,21 @@
 <script setup>
-import { ref, watch, onMounted, getCurrentInstance } from 'vue'
+import { ref, watch, onMounted, getCurrentInstance, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth0 } from '@auth0/auth0-vue'
 import Button from '@/components/Button.vue'
+import { useUserProfile } from '@/composables/useUserProfile.js'
 
 const route = useRoute()
 const router = useRouter()
 const auth0 = useAuth0()
 const isAuthenticated = auth0?.isAuthenticated
 const isLoading = auth0?.isLoading
+const { isFahrer, displayName } = useUserProfile()
 
 const searchQuery = ref('')
+
+const homeLink = computed(() => (isFahrer.value ? '/lieferauftraege' : '/'))
+const showCustomerNav = computed(() => !isFahrer.value)
 
 watch(
   () => route.query.name,
@@ -88,8 +93,13 @@ onMounted(() => {
   <header class="site-header">
     <div class="header-inner">
       <div class="header-top">
-        <router-link to="/" class="logo">EasyGather</router-link>
-        <form class="header-search" role="search" @submit.prevent="onSearchSubmit">
+        <router-link :to="homeLink" class="logo">EasyGather</router-link>
+        <form
+          v-if="showCustomerNav"
+          class="header-search"
+          role="search"
+          @submit.prevent="onSearchSubmit"
+        >
           <input
             v-model="searchQuery"
             type="search"
@@ -100,9 +110,12 @@ onMounted(() => {
         </form>
       </div>
       <nav class="nav-main">
-        <a href="#" @click.prevent="noop">Liefergebiet</a>
-        <router-link to="/shop">Shop</router-link>
-        <a href="#" @click.prevent="noop">Warenkorb</a>
+        <template v-if="showCustomerNav">
+          <a href="#" @click.prevent="noop">Liefergebiet</a>
+          <router-link to="/shop">Shop</router-link>
+          <a href="#" @click.prevent="noop">Warenkorb</a>
+        </template>
+        <router-link v-else to="/lieferauftraege">Lieferaufträge</router-link>
         <template v-if="!isLoading">
           <button
             v-if="!isAuthenticated"
@@ -113,11 +126,12 @@ onMounted(() => {
             Anmelden
           </button>
           <template v-else>
+            <span v-if="displayName" class="nav-greeting">Hallo, {{ displayName }}</span>
             <router-link to="/profile" class="nav-profile-link">Mein Profil</router-link>
             <button type="button" class="nav-auth-btn" @click="handleLogout">Abmelden</button>
           </template>
         </template>
-        <Button variant="register" href="#" @click="noop">Registrieren</Button>
+        <Button v-if="!isAuthenticated" variant="register" href="#" @click="noop">Registrieren</Button>
       </nav>
     </div>
   </header>
@@ -192,6 +206,11 @@ onMounted(() => {
 .nav-main a.router-link-active {
   color: var(--moss-dark);
   font-weight: 700;
+}
+
+.nav-greeting {
+  font-size: 0.88rem;
+  color: var(--ink);
 }
 
 .nav-auth-btn {
