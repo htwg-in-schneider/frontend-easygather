@@ -8,6 +8,7 @@ import ProductCatalog from '@/views/ProductCatalog.vue'
 import ProductDetail from '@/views/ProductDetail.vue'
 import CreateProduct from '@/views/CreateProduct.vue'
 import EditProduct from '@/views/EditProduct.vue'
+import DriverDashboardView from '@/views/DriverDashboardView.vue'
 
 const routes = [
   {
@@ -29,6 +30,12 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: ProfileView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/lieferauftraege',
+    name: 'driver-dashboard',
+    component: DriverDashboardView,
     beforeEnter: authGuard,
   },
   {
