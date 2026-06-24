@@ -174,3 +174,14 @@ Made static product page from mock work as a Vue project:
 - `AppAlert.vue` for success/error feedback instead of browser `alert()`; `ConfirmModal.vue` for cart item removal
 - Optional coupon code **EASY10** (10 % on subtotal) in cart and payment summary
 - Routes: `/cart`, `/checkout/delivery`, `/checkout/payment`, `/order/confirmation/:id`, `/orders`, `/orders/:id`
+
+### Iteration 15: Driver dashboard (initial setup with sample orders)
+
+- New `DriverDashboardView.vue` at `/lieferauftraege` (protected with `authGuard`): shows assigned delivery orders with address, content summary, and status dropdown (`offen`, `unterwegs`, `geliefert`)
+- `useUserProfile.js`: loads profile after login; FAHRER users are redirected from `/` and `/shop` to `/lieferauftraege`
+- `Navbar.vue`: role-based navigation for FAHRER (Lieferaufträge, greeting, logout; no shop, cart, or search)
+- `App.vue`: promotional banner hidden for FAHRER and on the driver route
+- `DeliveryFilterPanel.vue`: status filter (same panel style as shop filter); default option **Alle Lieferaufträge**
+- Delivered orders (`geliefert`) are sorted to the end of the list automatically
+- `backend.js`: `fetchAssignedDeliveries()`, `updateDeliveryStatus()` via `/api/delivery/assigned` and `PUT /api/delivery/:id/status`
+- **Scope note:** orders are **sample data** seeded in the backend for the test driver account (`maloku.ardonesa+fahrer@gmail.com`). Linking to real customer checkout, multi-driver accept flow, and admin assignment is planned for a later iteration.

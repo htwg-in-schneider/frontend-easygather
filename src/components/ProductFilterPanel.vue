@@ -13,7 +13,7 @@ defineProps({
   },
 })
 
-const emit = defineEmits(['apply', 'reset'])
+const emit = defineEmits(['apply', 'reset', 'close'])
 
 const categories = ref([])
 const translations = ref({})
@@ -51,11 +51,24 @@ function resetFilter() {
   maxPrice.value = ''
   emit('reset')
 }
+function closeFilter() {
+  emit('close')
+}
 </script>
 
 <template>
   <div v-show="open" class="shop-filter-panel" role="region" aria-label="Produktfilter">
-    <h3 class="shop-filter-heading">Filter</h3>
+    <div class="shop-filter-header">
+      <h3 class="shop-filter-heading">Filter</h3>
+      <button
+        type="button"
+        class="shop-filter-close"
+        aria-label="Filter schließen"
+        @click="closeFilter"
+      >
+        ×
+      </button>
+    </div>
 
     <div class="shop-filter-field">
       <label for="filterCategory">Kategorie</label>
