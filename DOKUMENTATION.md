@@ -4,7 +4,6 @@
 **Projekt:** EasyGather – Picknick- und Event-Bestellungen  
 **Repositories:** [frontend-easygather](https://github.com/htwg-in-schneider/frontend-easygather) · [easygather-backend](https://github.com/htwg-in-schneider/easygather-backend)
 
-> Diese Datei ist die **Abgabe-Dokumentation** nach Vorlage (Spezifikation, Implementierung, Bereitstellung).  
 > Die **schrittweise Entwicklung** (Iterationen 0–22) bleibt im [README.md](./README.md) erhalten – bitte beide Dokumente lesen.
 
 **Backend-Doku:** [easygather-backend/DOKUMENTATION.md](https://github.com/htwg-in-schneider/easygather-backend/blob/main/DOKUMENTATION.md) (API, Datenbank, Deployment, Sicherheit)
