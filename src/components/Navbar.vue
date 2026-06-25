@@ -92,7 +92,7 @@ function handleLogout(event) {
   event?.preventDefault()
   auth0?.logout({
     logoutParams: {
-      returnTo: window.location.origin,
+      returnTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
     },
   })
 }
