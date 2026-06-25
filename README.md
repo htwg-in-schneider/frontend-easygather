@@ -220,7 +220,7 @@ Made static product page from mock work as a Vue project:
 
 ## Configuration notes (intentional hardcoded values)
 
-These are not bugs — document them here so reviewers know where to look:
+Same configuration values are listed here to make clear where they are defined in the project.
 
 | What | Where | Note |
 |------|-------|------|
@@ -239,3 +239,14 @@ These are not bugs — document them here so reviewers know where to look:
 - **Produkt- und Kategoriebilder:** optional file upload (max. 3 MB, stored as Base64 in the backend); shop and home use `getProductDisplayImage()` / `getCategoryDisplayImage()` with local defaults when no custom image is set; `useProductImageUpload.js` for create/edit forms
 - `backend.js`: `fetchAdminDeliveries()`, `assignDeliveryDriver()`, `unassignDeliveryDriver()`
 - `ProductCard.vue` / `ProductDetail.vue`: hide **Auswählen** / **In den Warenkorb** for admins; show **Bearbeiten** instead
+
+### Iteration 21: Picknickkorb-Konfigurator, Produkterweiterungen und Warenkorb
+
+- **Picknickkorb konfigurieren:** new route `/picknickkorb/konfigurieren` → `ConfigureBasketView.vue` – choose quantities from **Essen & Getränke** and **Korb-Zubehör**, live summary, add all selected lines to the cart
+- **Shop banner:** `ConfigureBasketBanner.vue` at the bottom of the Picknickkörbe category (not in the product grid) with CTA **Eigenen Korb zusammenstellen**
+- **Configurator config:** `src/config/basketConfigurator.js` – hides accessories and configurator-only items (e.g. Gemüsesticks) from the normal shop; `backend.js` maps **Picknickkorb konfigurieren** with `configurable` / `priceFrom`
+- **Draft persistence:** Pinia store `configureBasketDraft.js` saves quantities in `localStorage` until **In den Warenkorb** (then cleared)
+- **Cart:** `addToCartWithQuantity()` in `cart.js` – configurator adds separate cart lines per product/quantity; `CartView.vue` shows shop images only where available (accessories text-only)
+- **Product images:** new assets and mappings in `productImages.js` for food, event rentals, and water; `getCartItemImage()` for configurator and cart
+- **ProductCatalog.vue:** filters hidden products; configurable basket excluded from grid, shown via banner only
+- **ProductCard.vue:** configurable basket links to configurator; button **Eigenen Korb zusammenstellen**
