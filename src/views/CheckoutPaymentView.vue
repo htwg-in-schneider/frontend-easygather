@@ -277,220 +277,123 @@ async function submitOrder() {
       <form class="checkout-form checkout-payment-form" @submit.prevent="submitOrder">
 
         <fieldset class="payment-options">
-
           <legend class="payment-legend">Zahlungsmethode</legend>
 
+          <template v-for="option in paymentOptions" :key="option.value">
+            <label
+              class="payment-option"
+              :class="{ 'payment-option-active': checkoutStore.paymentMethod === option.value }"
+            >
+              <input
+                v-model="checkoutStore.paymentMethod"
+                type="radio"
+                name="paymentMethod"
+                :value="option.value"
+              />
+              <span class="payment-option-icon" aria-hidden="true">
+                <svg v-if="option.icon === 'card'" viewBox="0 0 24 24">
+                  <path d="M3 6h18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm0 4v2h18v-2H3zm4 6h4v2H7v-2z" fill="currentColor" />
+                </svg>
+                <svg v-else-if="option.icon === 'paypal'" viewBox="0 0 24 24">
+                  <path d="M7 4h6.5c2.8 0 4.5 1.5 4.2 4.2-.2 2-1.4 3.3-3.2 3.6l1.3 6.2H12l-1-4.8H9.2L7 4zm2.2 2.2L9.8 12h2.1c1.6 0 2.5-.8 2.7-2.4.3-2-1-2.4-2.8-2.4H9.2z" fill="currentColor" />
+                </svg>
+                <svg v-else viewBox="0 0 24 24">
+                  <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.5V8h4.5L14 3.5zM8 12h8v2H8v-2zm0 4h6v2H8v-2z" fill="currentColor" />
+                </svg>
+              </span>
+              <span class="payment-option-copy">
+                <strong>{{ option.label }}</strong>
+                <small>{{ option.hint }}</small>
+              </span>
+            </label>
 
+            <div
+              v-if="checkoutStore.paymentMethod === 'KARTE' && option.value === 'KARTE'"
+              class="payment-details card"
+            >
+              <h3>Kreditkartendaten</h3>
+              <div class="product-form-field">
+                <label for="cardHolder">Karteninhaber <span class="field-required">*</span></label>
+                <input id="cardHolder" v-model="checkoutStore.paymentDetails.cardHolder" type="text" required autocomplete="cc-name" />
+              </div>
+              <div class="product-form-field">
+                <label for="cardNumber">Kartennummer <span class="field-required">*</span></label>
+                <div class="input-with-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" fill="currentColor"/></svg>
+                  <input
+                    id="cardNumber"
+                    :value="checkoutStore.paymentDetails.cardNumber"
+                    type="text"
+                    inputmode="numeric"
+                    required
+                    autocomplete="cc-number"
+                    placeholder="1234 5678 9012 3456"
+                    @input="onCardNumberInput"
+                  />
+                </div>
+              </div>
+              <div class="checkout-form-grid">
+                <div class="product-form-field">
+                  <label for="cardExpiry">Ablaufdatum <span class="field-required">*</span></label>
+                  <input
+                    id="cardExpiry"
+                    :value="checkoutStore.paymentDetails.expiry"
+                    type="text"
+                    inputmode="numeric"
+                    required
+                    autocomplete="cc-exp"
+                    placeholder="MM/JJ"
+                    maxlength="5"
+                    @input="onExpiryInput"
+                  />
+                </div>
+                <div class="product-form-field">
+                  <label for="cardCvc">Prüfziffer (CVC) <span class="field-required">*</span></label>
+                  <input
+                    id="cardCvc"
+                    v-model="checkoutStore.paymentDetails.cvc"
+                    type="password"
+                    inputmode="numeric"
+                    required
+                    autocomplete="cc-csc"
+                    maxlength="3"
+                    placeholder="123"
+                  />
+                </div>
+              </div>
+            </div>
 
-          <label
+            <div
+              v-else-if="checkoutStore.paymentMethod === 'PAYPAL' && option.value === 'PAYPAL'"
+              class="payment-details card"
+            >
+              <h3>PayPal</h3>
+              <p class="payment-details-lead">
+                Melde dich mit deinem PayPal-Konto an, um die Zahlung abzuschließen.
+              </p>
+              <div class="product-form-field">
+                <label for="paypalEmail">PayPal E-Mail <span class="field-required">*</span></label>
+                <input id="paypalEmail" v-model="checkoutStore.paymentDetails.paypalEmail" type="email" required placeholder="name@beispiel.de" />
+              </div>
+            </div>
 
-            v-for="option in paymentOptions"
-
-            :key="option.value"
-
-            class="payment-option"
-
-            :class="{ 'payment-option-active': checkoutStore.paymentMethod === option.value }"
-
-          >
-
-            <input
-
-              v-model="checkoutStore.paymentMethod"
-
-              type="radio"
-
-              name="paymentMethod"
-
-              :value="option.value"
-
-            />
-
-            <span class="payment-option-icon" aria-hidden="true">
-
-              <svg v-if="option.icon === 'card'" viewBox="0 0 24 24">
-
-                <path d="M3 6h18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm0 4v2h18v-2H3zm4 6h4v2H7v-2z" fill="currentColor" />
-
-              </svg>
-
-              <svg v-else-if="option.icon === 'paypal'" viewBox="0 0 24 24">
-
-                <path d="M7 4h6.5c2.8 0 4.5 1.5 4.2 4.2-.2 2-1.4 3.3-3.2 3.6l1.3 6.2H12l-1-4.8H9.2L7 4zm2.2 2.2L9.8 12h2.1c1.6 0 2.5-.8 2.7-2.4.3-2-1-2.4-2.8-2.4H9.2z" fill="currentColor" />
-
-              </svg>
-
-              <svg v-else viewBox="0 0 24 24">
-
-                <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.5V8h4.5L14 3.5zM8 12h8v2H8v-2zm0 4h6v2H8v-2z" fill="currentColor" />
-
-              </svg>
-
-            </span>
-
-            <span class="payment-option-copy">
-
-              <strong>{{ option.label }}</strong>
-
-              <small>{{ option.hint }}</small>
-
-            </span>
-
-          </label>
-
+            <div
+              v-else-if="checkoutStore.paymentMethod === 'RECHNUNG' && option.value === 'RECHNUNG'"
+              class="payment-details card"
+            >
+              <h3>Rechnung</h3>
+              <p class="payment-details-lead">
+                Die Rechnung wird zusammen mit deiner Bestellung per E-Mail versendet. Bitte überweise
+                den Betrag innerhalb von 14 Tagen nach Erhalt der Ware.
+              </p>
+              <ul class="payment-invoice-list">
+                <li>Zahlungsziel: 14 Tage nach Lieferung</li>
+                <li>Rechnungsadresse entspricht deiner Lieferadresse</li>
+                <li>Keine Vorauszahlung erforderlich</li>
+              </ul>
+            </div>
+          </template>
         </fieldset>
-
-
-
-        <div v-if="checkoutStore.paymentMethod === 'KARTE'" class="payment-details card">
-
-          <h3>Kreditkartendaten</h3>
-
-          <div class="product-form-field">
-
-            <label for="cardHolder">Karteninhaber <span class="field-required">*</span></label>
-
-            <input id="cardHolder" v-model="checkoutStore.paymentDetails.cardHolder" type="text" required autocomplete="cc-name" />
-
-          </div>
-
-          <div class="product-form-field">
-
-            <label for="cardNumber">Kartennummer <span class="field-required">*</span></label>
-
-            <div class="input-with-icon">
-
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" fill="currentColor"/></svg>
-
-              <input
-
-                id="cardNumber"
-
-                :value="checkoutStore.paymentDetails.cardNumber"
-
-                type="text"
-
-                inputmode="numeric"
-
-                required
-
-                autocomplete="cc-number"
-
-                placeholder="1234 5678 9012 3456"
-
-                @input="onCardNumberInput"
-
-              />
-
-            </div>
-
-          </div>
-
-          <div class="checkout-form-grid">
-
-            <div class="product-form-field">
-
-              <label for="cardExpiry">Ablaufdatum <span class="field-required">*</span></label>
-
-              <input
-
-                id="cardExpiry"
-
-                :value="checkoutStore.paymentDetails.expiry"
-
-                type="text"
-
-                inputmode="numeric"
-
-                required
-
-                autocomplete="cc-exp"
-
-                placeholder="MM/JJ"
-
-                maxlength="5"
-
-                @input="onExpiryInput"
-
-              />
-
-            </div>
-
-            <div class="product-form-field">
-
-              <label for="cardCvc">Prüfziffer (CVC) <span class="field-required">*</span></label>
-
-              <input
-
-                id="cardCvc"
-
-                v-model="checkoutStore.paymentDetails.cvc"
-
-                type="password"
-
-                inputmode="numeric"
-
-                required
-
-                autocomplete="cc-csc"
-
-                maxlength="3"
-
-                placeholder="123"
-
-              />
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-
-        <div v-else-if="checkoutStore.paymentMethod === 'PAYPAL'" class="payment-details card">
-
-          <h3>PayPal</h3>
-
-          <p class="payment-details-lead">
-            Melde dich mit deinem PayPal-Konto an, um die Zahlung abzuschließen.
-          </p>
-
-          <div class="product-form-field">
-
-            <label for="paypalEmail">PayPal E-Mail <span class="field-required">*</span></label>
-
-            <input id="paypalEmail" v-model="checkoutStore.paymentDetails.paypalEmail" type="email" required placeholder="name@beispiel.de" />
-
-          </div>
-
-        </div>
-
-
-
-        <div v-else class="payment-details card">
-
-          <h3>Rechnung</h3>
-
-          <p class="payment-details-lead">
-
-            Die Rechnung wird zusammen mit deiner Bestellung per E-Mail versendet. Bitte überweise
-
-            den Betrag innerhalb von 14 Tagen nach Erhalt der Ware.
-
-          </p>
-
-          <ul class="payment-invoice-list">
-
-            <li>Zahlungsziel: 14 Tage nach Lieferung</li>
-
-            <li>Rechnungsadresse entspricht deiner Lieferadresse</li>
-
-            <li>Keine Vorauszahlung erforderlich</li>
-
-          </ul>
-
-        </div>
 
 
 
@@ -724,13 +627,10 @@ async function submitOrder() {
 
 
 .payment-details {
-
   padding: 1rem;
-
   display: grid;
-
   gap: 0.85rem;
-
+  margin: -0.15rem 0 0.35rem;
 }
 
 

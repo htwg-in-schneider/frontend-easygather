@@ -50,7 +50,6 @@ function submitContact() {
       </p>
       <div class="cta-row">
         <NavButton to="/shop" variant="primary">Shop durchsuchen</NavButton>
-        <Button variant="secondary" href="#kontakt">Kontakt aufnehmen</Button>
       </div>
     </div>
 
@@ -82,7 +81,7 @@ function submitContact() {
     </div>
   </section>
 
-  <section id="kontakt">
+  <section id="kontakt" class="home-contact-section">
     <h2>Kontakt</h2>
     <p class="section-text">
       Du hast Fragen zu EasyGather oder zu deiner Bestellung? Schreib uns – wir melden uns so schnell wie möglich.
@@ -104,3 +103,9 @@ function submitContact() {
     </form>
   </section>
 </template>
+
+<style scoped>
+.home-contact-section {
+  margin-top: 3rem;
+}
+</style>
