@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import NavButton from '@/components/NavButton.vue'
 import { useUserProfile } from '@/composables/useUserProfile.js'
+import { isConfigurableBasket } from '@/config/basketConfigurator.js'
 
 const props = defineProps({
   product: {
@@ -18,7 +19,12 @@ const props = defineProps({
 const route = useRoute()
 const { isAdmin } = useUserProfile()
 
+const configurable = computed(() => isConfigurableBasket(props.product))
+
 const productLink = computed(() => {
+  if (configurable.value) {
+    return { name: 'configure-basket' }
+  }
   const query = {}
   const category = route.query.category
   if (typeof category === 'string' && category) {
@@ -32,19 +38,27 @@ const productLink = computed(() => {
 })
 
 function formatPrice(product) {
+  if (product.configurable) {
+    return ''
+  }
   const amount = `${product.price.toFixed(2).replace('.', ',')} EUR`
   return product.priceFrom ? `ab ${amount}` : amount
 }
 </script>
 
 <template>
-  <article class="card basket-card">
-    <img :src="product.imageUrl" :alt="product.imageAlt" />
+  <article class="card basket-card" :class="{ 'basket-card--no-image': !product.imageUrl }">
+    <img v-if="product.imageUrl" :src="product.imageUrl" :alt="product.imageAlt" />
+    <div v-else class="basket-card-placeholder" aria-hidden="true">
+      <span>{{ configurable ? 'Eigenen Korb zusammenstellen' : 'Ohne Bild' }}</span>
+    </div>
     <h3>{{ product.title }}</h3>
     <p>{{ product.description }}</p>
-    <span class="meta">{{ formatPrice(product) }}</span>
+    <span v-if="formatPrice(product)" class="meta">{{ formatPrice(product) }}</span>
     <div class="basket-card-actions">
-      <NavButton v-if="!isAdmin" :to="productLink" class="basket-btn">Auswählen</NavButton>
+      <NavButton v-if="!isAdmin" :to="productLink" class="basket-btn">
+        {{ configurable ? 'Eigenen Korb zusammenstellen' : 'Auswählen' }}
+      </NavButton>
       <NavButton
         v-if="showEditButton"
         :to="{ name: 'product-edit', params: { id: String(product.id) } }"
@@ -68,6 +82,17 @@ function formatPrice(product) {
   aspect-ratio: 4/3;
   object-fit: cover;
   display: block;
+}
+
+.basket-card-placeholder {
+  display: grid;
+  place-items: center;
+  min-height: 8.5rem;
+  padding: 1rem;
+  text-align: center;
+  background: linear-gradient(145deg, rgba(61, 107, 79, 0.1), rgba(201, 107, 74, 0.08));
+  color: var(--moss-dark);
+  font-weight: 600;
 }
 
 .basket-card h3 {

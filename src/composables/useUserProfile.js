@@ -48,6 +48,15 @@ export function useUserProfile() {
     }
   }
 
+  function redirectAdminIfNeeded() {
+    if (!isAdmin.value) {
+      return
+    }
+    if (route.path === '/') {
+      router.replace('/admin')
+    }
+  }
+
   if (!initialized) {
     initialized = true
 
@@ -60,6 +69,7 @@ export function useUserProfile() {
         if (authed) {
           await refreshProfile()
           redirectFahrerIfNeeded()
+          redirectAdminIfNeeded()
         } else {
           profile.value = null
         }
@@ -71,6 +81,7 @@ export function useUserProfile() {
       () => route.path,
       () => {
         redirectFahrerIfNeeded()
+        redirectAdminIfNeeded()
       },
     )
   }

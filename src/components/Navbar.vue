@@ -21,7 +21,15 @@ const { login } = useAuthLogin()
 
 const searchQuery = ref('')
 
-const homeLink = computed(() => (isFahrer.value ? '/lieferauftraege' : '/'))
+const homeLink = computed(() => {
+  if (isFahrer.value) {
+    return '/lieferauftraege'
+  }
+  if (isAdmin.value) {
+    return '/admin'
+  }
+  return '/'
+})
 const showCustomerNav = computed(() => !isFahrer.value)
 const showHeaderSearch = computed(() => showCustomerNav.value)
 const showCart = computed(() => showCustomerNav.value && !isAdmin.value)

@@ -207,13 +207,10 @@ onMounted(async () => {
             <li v-for="item in order.items" :key="item.id" class="order-item-card">
 
               <img
-
+                v-if="resolveOrderItemImage(item).imageUrl"
                 :src="resolveOrderItemImage(item).imageUrl"
-
                 :alt="resolveOrderItemImage(item).imageAlt"
-
                 class="order-item-image"
-
               />
 
               <div class="order-item-body">

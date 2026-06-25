@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
+import { getCartItemImage } from '@/productImages.js'
 
 export const SHIPPING_COST = 4.9
 export const VALID_COUPON_CODE = 'EASY10'
@@ -16,21 +17,31 @@ function couponStorageKey(userKey) {
 }
 
 function mergeCartItems(targetItems, sourceItems) {
-  const merged = targetItems.map((item) => ({ ...item }))
+  const merged = targetItems.map((item) => normalizeCartItem({ ...item }))
   for (const source of sourceItems) {
-    const existing = merged.find((item) => item.id === source.id)
+    const normalized = normalizeCartItem({ ...source })
+    const existing = merged.find((item) => item.id === normalized.id)
     if (existing) {
-      existing.quantity += source.quantity
+      existing.quantity += normalized.quantity
     } else {
-      merged.push({ ...source })
+      merged.push(normalized)
     }
   }
   return merged
 }
 
+function normalizeCartItem(item) {
+  const { imageUrl, imageAlt } = getCartItemImage(item.title)
+  return { ...item, imageUrl, imageAlt }
+}
+
+function normalizeCartItems(cartItems) {
+  return cartItems.map(normalizeCartItem)
+}
+
 function readStoredItems(userKey) {
   const storedItems = localStorage.getItem(itemsStorageKey(userKey))
-  return storedItems ? JSON.parse(storedItems) : []
+  return storedItems ? normalizeCartItems(JSON.parse(storedItems)) : []
 }
 
 function readStoredCoupon(userKey) {
@@ -62,7 +73,7 @@ export const useCartStore = defineStore('cart', () => {
   function loadCartForUser(userKey) {
     activeUserKey = userKey
     const storedItems = localStorage.getItem(itemsStorageKey(userKey))
-    items.value = storedItems ? JSON.parse(storedItems) : []
+    items.value = storedItems ? normalizeCartItems(JSON.parse(storedItems)) : []
     appliedCoupon.value = localStorage.getItem(couponStorageKey(userKey)) ?? ''
     couponMessage.value = ''
     couponError.value = false
@@ -153,17 +164,38 @@ export const useCartStore = defineStore('cart', () => {
     couponError.value = true
   }
 
-  function addToCart(product) {
+  function addToCartWithQuantity(product, quantity) {
+    if (quantity <= 0) {
+      return
+    }
+    const { imageUrl, imageAlt } = getCartItemImage(product.title)
     const existingItem = items.value.find((item) => item.id === product.id)
     if (existingItem) {
-      existingItem.quantity += 1
+      existingItem.quantity += quantity
     } else {
       items.value.push({
         id: product.id,
         title: product.title,
         price: product.price,
-        imageUrl: product.imageUrl,
-        imageAlt: product.imageAlt ?? product.title,
+        imageUrl,
+        imageAlt: imageAlt || product.title,
+        quantity,
+      })
+    }
+  }
+
+  function addToCart(product) {
+    const existingItem = items.value.find((item) => item.id === product.id)
+    if (existingItem) {
+      existingItem.quantity += 1
+    } else {
+      const { imageUrl, imageAlt } = getCartItemImage(product.title)
+      items.value.push({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        imageUrl,
+        imageAlt: imageAlt || product.title,
         quantity: 1,
       })
     }
@@ -209,6 +241,7 @@ export const useCartStore = defineStore('cart', () => {
     switchAccount,
     applyCoupon,
     addToCart,
+    addToCartWithQuantity,
     removeFromCart,
     updateQuantity,
     clearCart,

@@ -188,9 +188,14 @@ function openProduct(item) {
 
         <li v-for="item in cartStore.items" :key="item.id" class="cart-item card">
 
-          <button type="button" class="cart-item-link" @click="openProduct(item)">
+          <button
+            type="button"
+            class="cart-item-link"
+            :class="{ 'cart-item-link--no-image': !item.imageUrl }"
+            @click="openProduct(item)"
+          >
 
-            <img :src="item.imageUrl" :alt="item.imageAlt" class="cart-item-image" />
+            <img v-if="item.imageUrl" :src="item.imageUrl" :alt="item.imageAlt" class="cart-item-image" />
 
             <div class="cart-item-body">
 
@@ -504,7 +509,9 @@ function openProduct(item) {
 
 }
 
-
+.cart-item-link--no-image {
+  grid-template-columns: minmax(0, 1fr);
+}
 
 .cart-item-image {
 

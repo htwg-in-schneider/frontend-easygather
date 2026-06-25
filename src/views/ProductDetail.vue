@@ -6,6 +6,7 @@ import { useCartStore } from '@/stores/cart.js'
 import NavButton from '@/components/NavButton.vue'
 import Button from '@/components/Button.vue'
 import { useUserProfile } from '@/composables/useUserProfile.js'
+import { isConfigurableBasket } from '@/config/basketConfigurator.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -41,6 +42,10 @@ async function loadProduct() {
   product.value = null
   try {
     product.value = await fetchProductById(route.params.id)
+    if (product.value && isConfigurableBasket(product.value)) {
+      router.replace({ name: 'configure-basket' })
+      return
+    }
   } catch (err) {
     console.error('Error fetching product:', err)
     error.value = 'Produkt konnte nicht geladen werden.'
@@ -72,11 +77,11 @@ function addToCart() {
       <img :src="product.imageUrl" :alt="product.imageAlt" class="product-detail-image" />
       <div>
         <h2>{{ product.title }}</h2>
+        <p class="product-detail-description">{{ product.description }}</p>
         <div class="product-detail-price-box">
           <span class="product-detail-price-label">Preis</span>
           <span class="product-detail-price-value">{{ formatPrice(product) }}</span>
         </div>
-        <p class="product-detail-description">{{ product.description }}</p>
         <template v-if="product.includedItems?.length">
           <h3 class="product-detail-included-title">Enthaltene Artikel</h3>
           <ul class="product-detail-included">

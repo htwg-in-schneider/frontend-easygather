@@ -1,4 +1,5 @@
 import { getProductDisplayImage, isPlaceholderImageUrl } from '@/productImages.js'
+import { isConfigurableBasket } from '@/config/basketConfigurator.js'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8081'
 
@@ -10,18 +11,37 @@ function authHeaders(accessToken) {
 }
 
 export function mapBackendProduct(item) {
-  const { imageUrl, imageAlt } = getProductDisplayImage(item)
+  const configurable = isConfigurableBasket(item)
+  const { imageUrl, imageAlt } = configurable
+    ? { imageUrl: null, imageAlt: item.title ?? 'Produktbild' }
+    : getProductDisplayImage(item)
   return {
     id: item.id,
     title: item.title,
     description: item.description,
     price: item.price,
-    priceFrom: false,
+    priceFrom: configurable,
+    configurable,
     imageUrl,
     imageAlt,
+    includedItems: Array.isArray(item.includedItems) ? item.includedItems : [],
     category: item.category?.shopCategory ?? null,
     categoryTitle: item.category?.title ?? null,
   }
+}
+
+function parseIncludedItemsText(text) {
+  if (!text?.trim()) {
+    return []
+  }
+  return text
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+}
+
+export function formatIncludedItemsForForm(items) {
+  return Array.isArray(items) ? items.join('\n') : ''
 }
 
 export async function fetchProducts(filters = {}) {
@@ -132,6 +152,7 @@ export function buildProductPayload(form) {
     description: form.description,
     price: Number(form.price),
     imageUrl: imageUrl && !isPlaceholderImageUrl(imageUrl) ? imageUrl : null,
+    includedItems: parseIncludedItemsText(form.includedItemsText),
     category: { id: Number(form.categoryId) },
   }
 }

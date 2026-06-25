@@ -12,6 +12,7 @@ import OrderDetailView from '@/views/OrderDetailView.vue'
 import OrdersView from '@/views/OrdersView.vue'
 import ProductCatalog from '@/views/ProductCatalog.vue'
 import ProductDetail from '@/views/ProductDetail.vue'
+import ConfigureBasketView from '@/views/ConfigureBasketView.vue'
 import CreateProduct from '@/views/CreateProduct.vue'
 import EditProduct from '@/views/EditProduct.vue'
 import DriverDashboardView from '@/views/DriverDashboardView.vue'
@@ -145,6 +146,11 @@ const routes = [
     path: '/shop',
     name: 'shop',
     component: ProductCatalog,
+  },
+  {
+    path: '/picknickkorb/konfigurieren',
+    name: 'configure-basket',
+    component: ConfigureBasketView,
   },
   {
     path: '/product/view/:id',

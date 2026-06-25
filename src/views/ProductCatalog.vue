@@ -5,9 +5,11 @@ import { useAuth0 } from '@auth0/auth0-vue'
 import { fetchProducts, fetchCategoryTranslations } from '@/api/backend.js'
 import { useUserProfile } from '@/composables/useUserProfile.js'
 import ProductCard from '@/components/ProductCard.vue'
+import ConfigureBasketBanner from '@/components/ConfigureBasketBanner.vue'
 import ProductFilterPanel from '@/components/ProductFilterPanel.vue'
 import Button from '@/components/Button.vue'
 import NavButton from '@/components/NavButton.vue'
+import { isConfigurableBasket, isHiddenFromShop } from '@/config/basketConfigurator.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -23,7 +25,17 @@ const selectedMaxPrice = ref('')
 const filterOpen = ref(false)
 const translations = ref({})
 
-const displayedProducts = computed(() => products.value)
+const gridProducts = computed(() =>
+  products.value.filter((product) => !isHiddenFromShop(product) && !isConfigurableBasket(product)),
+)
+
+const configurableBasket = computed(() => products.value.find((product) => isConfigurableBasket(product)))
+
+const showConfiguratorBanner = computed(
+  () =>
+    configurableBasket.value &&
+    (!selectedCategory.value || selectedCategory.value === 'picknickkoerbe'),
+)
 
 const activeCategoryLabel = computed(() => {
   if (!selectedCategory.value) return ''
@@ -185,15 +197,17 @@ function updateFiltersInUrl() {
 
     <p v-if="loading" class="section-text">Produkte werden geladen …</p>
     <p v-else-if="error" class="section-text">{{ error }}</p>
-    <p v-else-if="displayedProducts.length === 0" class="section-text">Keine Produkte gefunden.</p>
+    <p v-else-if="gridProducts.length === 0 && !showConfiguratorBanner" class="section-text">Keine Produkte gefunden.</p>
 
-    <div v-if="displayedProducts.length" class="basket-grid">
+    <div v-if="gridProducts.length" class="basket-grid">
       <ProductCard
-        v-for="product in displayedProducts"
+        v-for="product in gridProducts"
         :key="product.id"
         :product="product"
         :show-edit-button="isAdmin"
       />
     </div>
+
+    <ConfigureBasketBanner v-if="showConfiguratorBanner" :product="configurableBasket" />
   </section>
 </template>

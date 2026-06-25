@@ -125,15 +125,10 @@ function openOrder(orderId) {
         <button type="button" class="orders-card card" @click="openOrder(order.id)">
 
           <img
-
-            v-if="primaryItem(order)"
-
+            v-if="primaryItem(order) && resolveOrderItemImage(primaryItem(order)).imageUrl"
             :src="resolveOrderItemImage(primaryItem(order)).imageUrl"
-
             :alt="resolveOrderItemImage(primaryItem(order)).imageAlt"
-
             class="orders-card-image"
-
           />
 
           <div class="orders-card-body">

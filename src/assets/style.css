@@ -686,8 +686,9 @@ section h2 {
 
 .cart-page.checkout-flow,
 .checkout-page.checkout-flow,
-.orders-page.checkout-flow {
-  max-width: 56rem;
+.orders-page.checkout-flow,
+.configure-basket-page.checkout-flow {
+  max-width: 58rem;
 }
 
 .checkout-flow-header {

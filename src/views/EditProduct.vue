@@ -8,6 +8,7 @@ import {
   fetchCategories,
   fetchCategoryTranslations,
   fetchRawProductById,
+  formatIncludedItemsForForm,
   updateProduct,
 } from '@/api/backend.js'
 import { getProductDisplayImage, isPlaceholderImageUrl } from '@/productImages.js'
@@ -28,6 +29,7 @@ const form = ref({
   price: 0,
   imageUrl: '',
   description: '',
+  includedItemsText: '',
   categoryId: '',
 })
 const categories = ref([])
@@ -83,6 +85,7 @@ async function loadProduct() {
       price: data.price ?? 0,
       imageUrl: isPlaceholderImageUrl(rawImageUrl) ? '' : rawImageUrl,
       description: data.description ?? '',
+      includedItemsText: formatIncludedItemsForForm(data.includedItems),
       categoryId: data.category?.id ?? '',
     }
   } catch (error) {
@@ -184,6 +187,16 @@ async function submitDelete() {
         <div class="product-form-field">
           <label for="productDescription">Beschreibung</label>
           <textarea id="productDescription" v-model="form.description" rows="4" />
+        </div>
+        <div class="product-form-field">
+          <label for="productIncludedItems">Enthaltene Artikel</label>
+          <textarea
+            id="productIncludedItems"
+            v-model="form.includedItemsText"
+            rows="6"
+            placeholder="Ein Artikel pro Zeile, z. B.&#10;2 Sandwiches&#10;Obst&#10;Servietten"
+          />
+          <p class="field-hint">Ein Stichpunkt pro Zeile – wird auf der Produktseite mit Häkchen angezeigt.</p>
         </div>
         <div class="product-form-actions">
           <NavButton to="/shop" variant="secondary">Abbrechen</NavButton>

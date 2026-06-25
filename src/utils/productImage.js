@@ -1,5 +1,5 @@
-import { resolveProductImage } from '@/productImages.js'
+import { getCartItemImage } from '@/productImages.js'
 
 export function resolveOrderItemImage(item) {
-  return resolveProductImage({ title: item.productTitle ?? item.title ?? '' })
+  return getCartItemImage(item.productTitle ?? item.title ?? '')
 }
