@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import NavButton from '@/components/NavButton.vue'
+import { useUserProfile } from '@/composables/useUserProfile.js'
 
 const props = defineProps({
   product: {
@@ -15,6 +16,7 @@ const props = defineProps({
 })
 
 const route = useRoute()
+const { isAdmin } = useUserProfile()
 
 const productLink = computed(() => {
   const query = {}
@@ -42,7 +44,7 @@ function formatPrice(product) {
     <p>{{ product.description }}</p>
     <span class="meta">{{ formatPrice(product) }}</span>
     <div class="basket-card-actions">
-      <NavButton :to="productLink" class="basket-btn">Auswählen</NavButton>
+      <NavButton v-if="!isAdmin" :to="productLink" class="basket-btn">Auswählen</NavButton>
       <NavButton
         v-if="showEditButton"
         :to="{ name: 'product-edit', params: { id: String(product.id) } }"

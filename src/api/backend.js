@@ -1,4 +1,4 @@
-import { resolveProductImage } from '@/productImages.js'
+import { getProductDisplayImage, isPlaceholderImageUrl } from '@/productImages.js'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8081'
 
@@ -10,7 +10,7 @@ function authHeaders(accessToken) {
 }
 
 export function mapBackendProduct(item) {
-  const { imageUrl, imageAlt } = resolveProductImage(item)
+  const { imageUrl, imageAlt } = getProductDisplayImage(item)
   return {
     id: item.id,
     title: item.title,
@@ -126,11 +126,12 @@ export async function updateProfile(form, accessToken) {
 }
 
 export function buildProductPayload(form) {
+  const imageUrl = form.imageUrl?.trim()
   return {
     title: form.title,
     description: form.description,
     price: Number(form.price),
-    imageUrl: form.imageUrl,
+    imageUrl: imageUrl && !isPlaceholderImageUrl(imageUrl) ? imageUrl : null,
     category: { id: Number(form.categoryId) },
   }
 }
@@ -258,9 +259,11 @@ export async function updateDeliveryStatus(id, status, accessToken) {
 }
 
 export function buildCategoryPayload(form) {
+  const imageUrl = form.imageUrl?.trim()
   return {
     title: form.title.trim(),
     shopCategory: form.shopCategory.trim(),
+    imageUrl: imageUrl && !isPlaceholderImageUrl(imageUrl) ? imageUrl : null,
   }
 }
 
@@ -300,10 +303,13 @@ export async function deleteCategory(id, accessToken) {
   }
 }
 
-export async function fetchUsers(accessToken, q = '') {
+export async function fetchUsers(accessToken, q = '', role = '') {
   const params = new URLSearchParams()
   if (q.trim()) {
     params.append('q', q.trim())
+  }
+  if (role.trim()) {
+    params.append('role', role.trim())
   }
   const query = params.toString()
   const url = query ? `${API_BASE_URL}/api/user?${query}` : `${API_BASE_URL}/api/user`
@@ -361,6 +367,47 @@ export async function fetchAdminOrders(accessToken, q = '') {
     : `${API_BASE_URL}/api/order/admin/all`
   const response = await fetch(url, {
     headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+export async function fetchAdminDeliveries(accessToken, q = '') {
+  const params = new URLSearchParams()
+  if (q.trim()) {
+    params.append('q', q.trim())
+  }
+  const query = params.toString()
+  const url = query
+    ? `${API_BASE_URL}/api/delivery/admin/all?${query}`
+    : `${API_BASE_URL}/api/delivery/admin/all`
+  const response = await fetch(url, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+export async function assignDeliveryDriver(deliveryId, driverId, accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/delivery/admin/${deliveryId}/assign`, {
+    method: 'PUT',
+    headers: authHeaders(accessToken),
+    body: JSON.stringify({ driverId }),
+  })
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  return response.json()
+}
+
+export async function unassignDeliveryDriver(deliveryId, accessToken) {
+  const response = await fetch(`${API_BASE_URL}/api/delivery/admin/${deliveryId}/unassign`, {
+    method: 'PUT',
+    headers: authHeaders(accessToken),
   })
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`)

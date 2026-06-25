@@ -1,9 +1,12 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth0 } from '@auth0/auth0-vue'
 import { buildCategoryPayload, createCategory } from '@/api/backend.js'
+import { getCategoryDisplayImage } from '@/categoryImages.js'
+import { isPlaceholderImageUrl } from '@/productImages.js'
 import { useAdminAccess } from '@/composables/useAdminAccess.js'
+import { useProductImageUpload } from '@/composables/useProductImageUpload.js'
 import { notifyError, notifySuccess, notifyWarning } from '@/composables/useNotification.js'
 import Button from '@/components/Button.vue'
 import NavButton from '@/components/NavButton.vue'
@@ -15,7 +18,22 @@ const { ensureAdmin } = useAdminAccess()
 const form = ref({
   title: '',
   shopCategory: '',
+  imageUrl: '',
 })
+
+const { onImageFileChange, clearCustomImage } = useProductImageUpload(form)
+
+const previewImage = computed(() =>
+  getCategoryDisplayImage({
+    title: form.value.title,
+    shopCategory: form.value.shopCategory,
+    imageUrl: form.value.imageUrl,
+  }),
+)
+
+const hasCustomImage = computed(
+  () => form.value.imageUrl && !isPlaceholderImageUrl(form.value.imageUrl),
+)
 
 onMounted(async () => {
   await ensureAdmin()
@@ -45,6 +63,10 @@ async function onSubmit() {
       <h2>Neue Kategorie</h2>
     </header>
 
+    <div class="product-form-preview">
+      <img :src="previewImage.imageUrl" :alt="previewImage.imageAlt" />
+    </div>
+
     <form class="admin-form card" @submit.prevent="onSubmit">
       <div class="product-form-field">
         <label for="categoryTitle">Titel <span class="field-required">*</span></label>
@@ -60,6 +82,23 @@ async function onSubmit() {
           placeholder="z. B. picknickkoerbe"
         />
         <small class="field-hint">Wird in URLs und Filtern verwendet (klein, ohne Leerzeichen).</small>
+      </div>
+      <div class="product-form-field">
+        <label for="categoryImage">Kategoriebild</label>
+        <input id="categoryImage" type="file" accept="image/*" @change="onImageFileChange" />
+        <small class="field-hint">
+          Optional: eigenes Bild hochladen (max. 3 MB). Ohne Upload wird das Standardbild zum Shop-Schlüssel
+          verwendet.
+        </small>
+        <Button
+          v-if="hasCustomImage"
+          type="button"
+          variant="secondary"
+          class="clear-image-btn"
+          @click="clearCustomImage"
+        >
+          Eigenes Bild entfernen
+        </Button>
       </div>
       <div class="checkout-form-actions">
         <Button type="submit" variant="primary">Speichern</Button>
@@ -93,5 +132,9 @@ async function onSubmit() {
 .field-hint {
   color: var(--muted);
   font-size: 0.85rem;
+}
+
+.clear-image-btn {
+  margin-top: 0.5rem;
 }
 </style>

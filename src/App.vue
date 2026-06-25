@@ -11,8 +11,10 @@ import { useAuthLogin } from '@/composables/useAuthLogin.js'
 import { useCartStore, resolveCartUserKey } from '@/stores/cart.js'
 
 const route = useRoute()
-const { isFahrer } = useUserProfile()
-const showBanner = computed(() => !isFahrer.value && route.path !== '/lieferauftraege')
+const { isFahrer, isAdmin } = useUserProfile()
+const showBanner = computed(
+  () => !isFahrer.value && !isAdmin.value && route.path !== '/lieferauftraege',
+)
 
 const auth0 = useAuth0()
 const isAuthenticated = auth0?.isAuthenticated

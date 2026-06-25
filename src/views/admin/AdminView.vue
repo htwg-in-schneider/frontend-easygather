@@ -26,9 +26,15 @@ const sections = [
   },
   {
     title: 'Bestellungen',
-    description: 'Alle Kundenbestellungen einsehen und nachvollziehen.',
+    description: 'Kundenbestellungen einsehen und Vorgänge nachverfolgen.',
     to: '/admin/orders',
     cta: 'Bestellungen anzeigen',
+  },
+  {
+    title: 'Lieferaufträge',
+    description: 'Lieferaufträge verwalten und Fahrern zuweisen.',
+    to: '/admin/deliveries',
+    cta: 'Lieferaufträge öffnen',
   },
 ]
 
@@ -43,7 +49,7 @@ onMounted(async () => {
       <p class="eyebrow">Administration</p>
       <h2>Stammdaten verwalten</h2>
       <p class="section-text">
-        Verwalte Produkte, Kategorien, Nutzer und Bestellungen zentral an einem Ort.
+        Stammdaten pflegen (Produkte, Kategorien, Nutzer) und Bestellungen sowie Lieferaufträge einsehen.
       </p>
     </header>
 

@@ -1,6 +1,8 @@
 <script setup>
-import { ref } from 'vue'
-import { categories } from '@/data.js'
+import { ref, onMounted } from 'vue'
+import { fetchCategories } from '@/api/backend.js'
+import { mapCategoryForHome } from '@/categoryImages.js'
+import { categories as fallbackCategories } from '@/data.js'
 import freundePicknickImg from '@/assets/FreundePicknick.jpg'
 import Button from '@/components/Button.vue'
 import NavButton from '@/components/NavButton.vue'
@@ -11,11 +13,20 @@ const contactForm = ref({
   message: '',
 })
 
+const homeCategories = ref([...fallbackCategories])
+
 const contactEmail = 'kontakt@easygather.de'
 
-function getCategories() {
-  return categories
-}
+onMounted(async () => {
+  try {
+    const data = await fetchCategories()
+    if (data.length) {
+      homeCategories.value = data.map(mapCategoryForHome)
+    }
+  } catch (err) {
+    console.error('Could not load categories for home:', err)
+  }
+})
 
 function noop(event) {
   event?.preventDefault()
@@ -61,7 +72,7 @@ function submitContact() {
     <p class="section-text">Picknickkörbe, Speisen & Getränke sowie Party- und Eventzubehör.</p>
     <div class="category-grid">
       <router-link
-        v-for="category in getCategories()"
+        v-for="category in homeCategories"
         :key="category.id"
         :to="{ path: '/shop', query: { category: category.shopCategory } }"
         class="card category-card category-link"
@@ -91,11 +102,9 @@ function submitContact() {
       </div>
       <div class="product-form-field">
         <label for="contactMessage">Nachricht</label>
-        <textarea id="contactMessage" v-model="contactForm.message" rows="5" required />
+        <textarea id="contactMessage" v-model="contactForm.message" rows="4" required />
       </div>
-      <div class="product-form-actions">
-        <Button type="submit" variant="primary">Nachricht senden</Button>
-      </div>
+      <Button type="submit" variant="primary">Nachricht senden</Button>
     </form>
   </section>
 </template>

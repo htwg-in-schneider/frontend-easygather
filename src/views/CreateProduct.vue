@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth0 } from '@auth0/auth0-vue'
 import {
@@ -8,8 +8,10 @@ import {
   fetchCategories,
   fetchCategoryTranslations,
 } from '@/api/backend.js'
+import { getProductDisplayImage, isPlaceholderImageUrl } from '@/productImages.js'
 import { notifyError, notifySuccess, notifyWarning } from '@/composables/useNotification.js'
 import { useAdminAccess } from '@/composables/useAdminAccess.js'
+import { useProductImageUpload } from '@/composables/useProductImageUpload.js'
 import Button from '@/components/Button.vue'
 import NavButton from '@/components/NavButton.vue'
 
@@ -26,6 +28,21 @@ const form = ref({
 })
 const categories = ref([])
 const translations = ref({})
+
+const { onImageFileChange, clearCustomImage } = useProductImageUpload(form)
+
+const previewImage = computed(() => {
+  const category = categories.value.find((c) => c.id === form.value.categoryId)
+  return getProductDisplayImage({
+    title: form.value.title,
+    category,
+    imageUrl: form.value.imageUrl,
+  })
+})
+
+const hasCustomImage = computed(
+  () => form.value.imageUrl && !isPlaceholderImageUrl(form.value.imageUrl),
+)
 
 onMounted(async () => {
   if (!(await ensureAdmin())) {
@@ -82,6 +99,9 @@ async function submitCreate() {
 <template>
   <section class="product-form-page">
     <h2>Neues Produkt erstellen</h2>
+    <div class="product-form-preview">
+      <img :src="previewImage.imageUrl" :alt="previewImage.imageAlt" />
+    </div>
     <form class="product-form" @submit.prevent="submitCreate">
       <div class="product-form-field">
         <label for="productName">Name</label>
@@ -101,8 +121,21 @@ async function submitCreate() {
         <input id="productPrice" v-model.number="form.price" type="number" min="0" step="0.01" required />
       </div>
       <div class="product-form-field">
-        <label for="productImageUrl">Bild-URL</label>
-        <input id="productImageUrl" v-model="form.imageUrl" type="text" />
+        <label for="productImage">Produktbild</label>
+        <input id="productImage" type="file" accept="image/*" @change="onImageFileChange" />
+        <p class="field-hint">
+          Optional: eigenes Bild hochladen (max. 3 MB). Ohne Upload wird das Standardbild zur Kategorie
+          verwendet.
+        </p>
+        <Button
+          v-if="hasCustomImage"
+          type="button"
+          variant="secondary"
+          class="clear-image-btn"
+          @click="clearCustomImage"
+        >
+          Eigenes Bild entfernen
+        </Button>
       </div>
       <div class="product-form-field">
         <label for="productDescription">Beschreibung</label>
@@ -115,3 +148,16 @@ async function submitCreate() {
     </form>
   </section>
 </template>
+
+<style scoped>
+.field-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.clear-image-btn {
+  margin-top: 0.5rem;
+}
+</style>

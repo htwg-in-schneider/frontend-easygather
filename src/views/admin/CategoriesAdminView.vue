@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuth0 } from '@auth0/auth0-vue'
 import { deleteCategory, fetchCategories } from '@/api/backend.js'
 import { useAdminAccess } from '@/composables/useAdminAccess.js'
@@ -10,6 +10,7 @@ import NavButton from '@/components/NavButton.vue'
 import Button from '@/components/Button.vue'
 
 const router = useRouter()
+const route = useRoute()
 const { getAccessTokenSilently } = useAuth0()
 const { ensureAdmin } = useAdminAccess()
 
@@ -22,6 +23,9 @@ const categoryToDelete = ref(null)
 onMounted(async () => {
   if (!(await ensureAdmin())) {
     return
+  }
+  if (typeof route.query.q === 'string') {
+    searchQuery.value = route.query.q
   }
   await loadCategories()
 })

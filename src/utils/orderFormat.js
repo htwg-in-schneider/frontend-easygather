@@ -37,3 +37,18 @@ export function paymentMethodLabel(method) {
       return method
   }
 }
+
+export function deliveryStatusLabel(status) {
+  switch (status) {
+    case 'EINGEGANGEN':
+      return 'Eingegangen'
+    case 'ANGENOMMEN':
+      return 'Angenommen'
+    case 'UNTERWEGS':
+      return 'Unterwegs'
+    case 'GELIEFERT':
+      return 'Geliefert'
+    default:
+      return status
+  }
+}

@@ -228,3 +228,14 @@ These are not bugs — document them here so reviewers know where to look:
 | Shipping **4,90 €** | `src/stores/cart.js` → `SHIPPING_COST` | Must match backend `OrderController.SHIPPING_COST` |
 | Coupon **EASY10** (10 %) | `src/stores/cart.js` → `VALID_COUPON_CODE` | Must match backend `OrderController.VALID_COUPON_CODE` |
 | Auth0 + API URL | `.env.development`, `.env.production` | `VITE_*` vars; production API: Render backend URL |
+
+### Iteration 20: Admin deliveries, global search and product images
+
+- **Lieferaufträge (Admin):** new `DeliveriesAdminView.vue` at `/admin/deliveries` – list all deliveries with search; assign or unassign a FAHRER; card on the admin hub
+- **Bestelldetails (Admin):** `OrderDetailView.vue` shows delivery status, assigned driver, and link to Lieferaufträge; „Erneut bestellen“ hidden on admin routes
+- **Globalsuche (Admin):** navbar search for admins (`useAdminGlobalSearch.js`) searches products, categories, users, orders, and deliveries in parallel; navigates to the matching admin page (e.g. `nutzer` → Nutzer, `max kunde` → Nutzerliste, single order → detail). Admin lists prefill search from `?q=` in the URL
+- **Admin-Navigation:** admins see **Administration** and profile links only (no Shop, Warenkorb, or Meine Bestellungen); promo banner hidden for admins; product management via Admin → Produkte / Shop
+- **Nutzer:** role filter (Kunde / Fahrer / Administrator) in `UsersAdminView.vue`
+- **Produkt- und Kategoriebilder:** optional file upload (max. 3 MB, stored as Base64 in the backend); shop and home use `getProductDisplayImage()` / `getCategoryDisplayImage()` with local defaults when no custom image is set; `useProductImageUpload.js` for create/edit forms
+- `backend.js`: `fetchAdminDeliveries()`, `assignDeliveryDriver()`, `unassignDeliveryDriver()`
+- `ProductCard.vue` / `ProductDetail.vue`: hide **Auswählen** / **In den Warenkorb** for admins; show **Bearbeiten** instead

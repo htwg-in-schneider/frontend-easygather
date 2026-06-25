@@ -22,6 +22,7 @@ import EditCategoryView from '@/views/admin/EditCategoryView.vue'
 import UsersAdminView from '@/views/admin/UsersAdminView.vue'
 import EditUserView from '@/views/admin/EditUserView.vue'
 import AdminOrdersView from '@/views/admin/AdminOrdersView.vue'
+import DeliveriesAdminView from '@/views/admin/DeliveriesAdminView.vue'
 
 const routes = [
   {
@@ -97,6 +98,12 @@ const routes = [
     path: '/admin/orders/:id',
     name: 'admin-order-detail',
     component: OrderDetailView,
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/admin/deliveries',
+    name: 'admin-deliveries',
+    component: DeliveriesAdminView,
     beforeEnter: authGuard,
   },
   {
