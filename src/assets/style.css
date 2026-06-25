@@ -40,18 +40,6 @@
   background: rgba(61, 107, 79, 0.08);
 }
 
-.btn-register {
-  background: var(--moss);
-  color: #fff;
-  padding: 0.35rem 0.8rem;
-  font-size: 0.88rem;
-}
-
-.btn-register:hover {
-  background: var(--moss-dark);
-  color: #fff;
-}
-
 .btn-danger {
   background: #a33d2d;
   color: #fff;

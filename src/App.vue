@@ -44,9 +44,6 @@ watch(
   { immediate: true },
 )
 
-function noop(event) {
-  event?.preventDefault()
-}
 </script>
 
 <template>
@@ -56,7 +53,7 @@ function noop(event) {
   <main>
     <router-view />
   </main>
-  <Footer @noop="noop" />
+  <Footer />
 </template>
 
 <style scoped></style>

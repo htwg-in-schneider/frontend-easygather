@@ -60,10 +60,6 @@ watch(
   { immediate: true },
 )
 
-function noop(event) {
-  event?.preventDefault()
-}
-
 async function onSearchSubmit() {
   const term = searchQuery.value.trim()
   if (isAdmin.value) {
@@ -136,7 +132,6 @@ onMounted(() => {
       </div>
       <nav class="nav-main">
         <template v-if="showCustomerNav">
-          <a href="#" class="nav-link" @click.prevent="noop">Liefergebiet</a>
           <router-link v-if="showShop" to="/shop" class="nav-link">Shop</router-link>
           <router-link v-if="showCart" to="/cart" class="nav-link nav-cart-link">
             Warenkorb
@@ -145,14 +140,9 @@ onMounted(() => {
         </template>
         <router-link v-else to="/lieferauftraege" class="nav-link">Lieferaufträge</router-link>
         <template v-if="!isLoading">
-          <button
-            v-if="!isAuthenticated"
-            type="button"
-            class="nav-link nav-auth-btn"
-            @click="handleLogin"
-          >
+          <Button v-if="!isAuthenticated" variant="primary" type="button" @click="handleLogin">
             Anmelden
-          </button>
+          </Button>
           <template v-else>
             <span v-if="isFahrer && displayName" class="nav-greeting">Hallo, {{ displayName }}</span>
             <router-link v-if="isAdmin" to="/admin" class="nav-link nav-profile-link">
@@ -162,10 +152,9 @@ onMounted(() => {
               Meine Bestellungen
             </router-link>
             <router-link to="/profile" class="nav-link nav-profile-link">Mein Profil</router-link>
-            <button type="button" class="nav-link nav-auth-btn" @click="handleLogout">Abmelden</button>
+            <Button variant="primary" type="button" @click="handleLogout">Abmelden</Button>
           </template>
         </template>
-        <Button v-if="!isAuthenticated" variant="register" href="#" @click="noop">Registrieren</Button>
       </nav>
     </div>
   </header>
@@ -230,6 +219,11 @@ onMounted(() => {
   align-items: center;
 }
 
+.nav-main :deep(.btn) {
+  padding: 0.4rem 0.95rem;
+  font-size: 0.88rem;
+}
+
 .nav-main .nav-link {
   color: var(--ink);
   font-size: 0.88rem;
@@ -249,14 +243,6 @@ onMounted(() => {
 .nav-greeting {
   font-size: 0.88rem;
   color: var(--ink);
-}
-
-.nav-auth-btn {
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
 }
 
 .nav-profile-link {

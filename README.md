@@ -76,7 +76,7 @@ Made static product page from mock work as a Vue project:
 
 ### Iteration 5: Low-Level components
 
-- `Button.vue`: reusable button with variants `primary` and `secondary` (plus `register` for the nav).
+- `Button.vue`: reusable button with variants `primary` and `secondary`
 - `FooterLink.vue`: styled footer links used in `Footer.vue`.
 - `ProductCard.vue` and `App.vue` use `Button` instead of raw `<button>` / `.btn` classes.
 - Button styles removed from global `style.css` and moved into `Button.vue` (`<style scoped>`).
@@ -153,7 +153,7 @@ Made static product page from mock work as a Vue project:
 - New views `ImpressumView.vue` and `DatenschutzView.vue` with static legal content
 - `router/index.js`: routes `/impressum` and `/datenschutz`; `scrollBehavior` scrolls to `#kontakt` below the sticky header
 - `FooterLink.vue`: optional `to` prop for internal `router-link` (like prof `FooterLink` with `href`, adapted for Vue Router)
-- `Footer.vue`: **Informationen** links Impressum and Datenschutz; **Kontakt** links to `/#kontakt`; AGB, Widerrufsrecht and other footer links remain placeholders for later iterations
+- `Footer.vue`: **Informationen** (Impressum, Datenschutz), **EasyGather** (Shop, Kontakt), **Konto** (Meine Bestellungen, Mein Profil) – nur funktionierende Links
 
 ### Iteration 13: User profile page and profile update
 
@@ -250,3 +250,10 @@ Same configuration values are listed here to make clear where they are defined i
 - **Product images:** new assets and mappings in `productImages.js` for food, event rentals, and water; `getCartItemImage()` for configurator and cart
 - **ProductCatalog.vue:** filters hidden products; configurable basket excluded from grid, shown via banner only
 - **ProductCard.vue:** configurable basket links to configurator; button **Eigenen Korb zusammenstellen**
+
+### Iteration 22: Usability and dead-link cleanup
+
+- Removed non-functional **Liefergebiet** from navbar and homepage
+- **Registrieren** removed (accounts are pre-created in Auth0 per project requirements); **Anmelden** / **Abmelden** as green primary buttons
+- **Footer:** only working links (Impressum, Datenschutz, Shop, Kontakt, Meine Bestellungen, Mein Profil); removed placeholder AGB, Newsletter, social stubs
+- Homepage secondary CTA: **Kontakt aufnehmen** → `#kontakt`

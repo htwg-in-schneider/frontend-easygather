@@ -28,10 +28,6 @@ onMounted(async () => {
   }
 })
 
-function noop(event) {
-  event?.preventDefault()
-}
-
 function submitContact() {
   const subject = encodeURIComponent(`Kontaktanfrage von ${contactForm.value.name}`)
   const body = encodeURIComponent(
@@ -54,7 +50,7 @@ function submitContact() {
       </p>
       <div class="cta-row">
         <NavButton to="/shop" variant="primary">Shop durchsuchen</NavButton>
-        <Button variant="secondary" href="#" @click="noop">Liefergebiet auswählen</Button>
+        <Button variant="secondary" href="#kontakt">Kontakt aufnehmen</Button>
       </div>
     </div>
 
