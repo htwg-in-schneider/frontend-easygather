@@ -213,6 +213,22 @@ Made static product page from mock work as a Vue project:
 - Live backend: **https://easygather-backend.onrender.com** (Spring Boot on Render, MariaDB from HTWG cloud)
 - Auth0 application must allow the GitHub Pages URL as callback, logout URL, and web origin
 
+### Iteration 19: Code cleanup
+
+- Removed unused `src/api/dummyjson.js` (replaced by backend API in iteration 8)
+- Removed unused `productCategories` export from `data.js`
+
+## Configuration notes (intentional hardcoded values)
+
+These are not bugs — document them here so reviewers know where to look:
+
+| What | Where | Note |
+|------|-------|------|
+| Homepage category tiles | `src/data.js` → `categories` | Marketing tiles with local images; **shop** categories/products come from `/api/category` and `/api/product` |
+| Shipping **4,90 €** | `src/stores/cart.js` → `SHIPPING_COST` | Must match backend `OrderController.SHIPPING_COST` |
+| Coupon **EASY10** (10 %) | `src/stores/cart.js` → `VALID_COUPON_CODE` | Must match backend `OrderController.VALID_COUPON_CODE` |
+| Auth0 + API URL | `.env.development`, `.env.production` | `VITE_*` vars; production API: Render backend URL |
+
 ### Iteration 20: Admin deliveries, global search and product images
 
 - **Lieferaufträge (Admin):** new `DeliveriesAdminView.vue` at `/admin/deliveries` – list all deliveries with search; assign or unassign a FAHRER; card on the admin hub
