@@ -4,6 +4,14 @@ Frontend for EasyGather – Picknick- und Event-Bestellungen.
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-blue?style=for-the-badge)](https://htwg-in-schneider.github.io/frontend-easygather/)
 
+## Dokumentation (Abgabe 5)
+
+| Dokument | Inhalt |
+|----------|--------|
+| **[DOKUMENTATION.md](./DOKUMENTATION.md)** | Ausführliche Abgabe-Doku (Spezifikation, Use Cases, Testzugänge, Aufgabe 5) |
+| **[README.md](./README.md)** (dieses File) | **Iterationen 0–22** – Entwicklungsverlauf Schritt für Schritt |
+| **[Backend-DOKUMENTATION.md](https://github.com/htwg-in-schneider/easygather-backend/blob/main/DOKUMENTATION.md)** | API, Datenbank, Sicherheit, Deployment |
+
 ## Recommended IDE Setup
 
 [VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
@@ -256,4 +264,5 @@ Same configuration values are listed here to make clear where they are defined i
 - Removed non-functional **Liefergebiet** from navbar and homepage
 - **Registrieren** removed (accounts are pre-created in Auth0 per project requirements); **Anmelden** / **Abmelden** as green primary buttons
 - **Footer:** only working links (Impressum, Datenschutz, Shop, Kontakt, Meine Bestellungen, Mein Profil); removed placeholder AGB, Newsletter, social stubs
-- Homepage secondary CTA: **Kontakt aufnehmen** → `#kontakt`
+- Checkout: payment form fields shown directly under the selected payment method
+- Contact section on homepage: extra spacing above `#kontakt`; contact only via footer link and form (no duplicate hero CTA)
