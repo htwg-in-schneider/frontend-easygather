@@ -2,13 +2,7 @@ import picknickkorbImg from './assets/Picknickkorb.jpg'
 import eventsImg from './assets/Events.jpg'
 import essenImg from './assets/Essen.jpg'
 
-/** Kategorien für Filter & 1:n-Beziehung (eine Kategorie → viele Produkte) */
-export const productCategories = [
-  { id: 'picknickkoerbe', label: 'Picknickkörbe' },
-  { id: 'party-event', label: 'Party & Event' },
-  { id: 'essen-getraenke', label: 'Essen & Getränke' },
-]
-
+/** Startseiten-Kacheln (Shop-Kategorien kommen aus dem Backend-API). */
 export const categories = [
   {
     id: 1,
