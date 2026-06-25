@@ -2,6 +2,17 @@ import { getProductDisplayImage, isPlaceholderImageUrl } from '@/productImages.j
 import { isConfigurableBasket } from '@/config/basketConfigurator.js'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8081'
+const API_FETCH_TIMEOUT_MS = 90_000
+
+async function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), API_FETCH_TIMEOUT_MS)
+  try {
+    return await fetch(url, { ...options, signal: controller.signal })
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
 
 function authHeaders(accessToken) {
   return {
@@ -58,7 +69,7 @@ export async function fetchProducts(filters = {}) {
 
   const query = params.toString()
   const url = query ? `${API_BASE_URL}/api/product?${query}` : `${API_BASE_URL}/api/product`
-  const response = await fetch(url)
+  const response = await fetchWithTimeout(url)
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`)
   }
@@ -106,7 +117,7 @@ export async function fetchCategoryById(id) {
 }
 
 export async function fetchCategoryTranslations() {
-  const response = await fetch(`${API_BASE_URL}/api/category/translation`)
+  const response = await fetchWithTimeout(`${API_BASE_URL}/api/category/translation`)
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`)
   }

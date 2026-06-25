@@ -48,11 +48,10 @@ const activePriceLabel = computed(() => {
 })
 
 onMounted(async () => {
-  await loadTranslations()
   syncCategoryFromRoute()
   syncSearchFromRoute()
   syncMaxPriceFromRoute()
-  await loadProducts(currentFilters())
+  await Promise.all([loadTranslations(), loadProducts(currentFilters())])
   if (isAuthenticated.value) {
     await refreshProfile()
   }
@@ -112,7 +111,10 @@ async function loadProducts(filters = {}) {
     products.value = await fetchProducts(filters)
   } catch (err) {
     console.error('Error fetching products:', err)
-    error.value = 'Produkte konnten nicht geladen werden.'
+    error.value =
+      err.name === 'AbortError'
+        ? 'Das Backend antwortet nicht. Bitte kurz warten und die Seite neu laden (Render startet ggf. erst auf).'
+        : 'Produkte konnten nicht geladen werden.'
     products.value = []
   } finally {
     loading.value = false
